@@ -18,8 +18,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # terceiros
-    'rest_framework',
     'django_celery_beat',
+    'drf_spectacular',
+    'rest_framework',
 
     # apps
     'apps.authentication',
@@ -94,3 +95,18 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+
+# DRF Settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Docs settings
+SPECTACULAR_SETTINGS  = {
+    'TITLE': 'EmmanuelTasks API',
+    'DESCRIPTION': 'Documentação da API',
+    'VERSION': 'Current',
+}
