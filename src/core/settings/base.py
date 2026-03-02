@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'apps.authentication',
     'apps.base',
     'apps.project',
+    'apps.sprint',
     'apps.team',
 ]
 
