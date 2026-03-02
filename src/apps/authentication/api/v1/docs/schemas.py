@@ -4,25 +4,6 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from apps.authentication.api.v1.docs.serializers import (
-    RegisterRequestResponseSerializer,
-)
-from apps.authentication.api.v1.views import (
-    RegisterView,
-)
-
-
-RegisterView = extend_schema_view(
-    post=extend_schema(
-        tags=['Authentication'],
-        summary='Registrar novo usuário',
-        description='Cria novo usuário com base nos dados fornecidos',
-        request=RegisterRequestResponseSerializer,
-        responses={200: RegisterRequestResponseSerializer}
-    )
-)(RegisterView)
-
-
 CustomTokenObtainPairView = extend_schema_view(
     post=extend_schema(
         tags=['Authentication'],
