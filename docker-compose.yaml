@@ -1,0 +1,101 @@
+version: "3.9"
+
+services:
+
+  # =========================
+  # REDIS
+  # =========================
+  redis:
+    image: redis:7-alpine
+    container_name: emmanueltasks_redis
+    ports:
+      - "6379:6379"
+
+  # =========================
+  # MIGRATIONS
+  # =========================
+  migrate:
+    build: .
+    container_name: emmanueltasks_migrate
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    working_dir: /app/src
+    volumes:
+      - ./src:/app/src
+    entrypoint: /entrypoint.migrate.sh
+    command: python manage.py migrate --noinput
+
+  # =========================
+  # DJANGO WEB
+  # =========================
+  web:
+    build: .
+    container_name: emmanueltasks_web
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+    env_file:
+      - .env
+    working_dir: /app/src
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "8000:8000"
+    entrypoint: /entrypoint.no-migrate.sh
+    command: python manage.py runserver 0.0.0.0:8000
+
+  # =========================
+  # CELERY WORKER
+  # =========================
+  celery:
+    build: .
+    container_name: emmanueltasks_celery
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    working_dir: /app/src
+    volumes:
+      - ./src:/app/src
+    entrypoint: /entrypoint.no-migrate.sh
+    command: celery -A core worker -l info
+
+  # =========================
+  # CELERY BEAT
+  # =========================
+  beat:
+    build: .
+    container_name: emmanueltasks_beat
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+    working_dir: /app/src
+    volumes:
+      - ./src:/app/src
+    entrypoint: /entrypoint.no-migrate.sh
+    command: celery -A core beat -l info
+
+  # =========================
+  # FLOWER
+  # =========================
+  flower:
+    build: .
+    container_name: emmanueltasks_flower
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    working_dir: /app/src
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "5555:5555"
+    entrypoint: /entrypoint.no-migrate.sh
+    command: celery -A core flower --port=5555
+  
