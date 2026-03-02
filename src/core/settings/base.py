@@ -62,7 +62,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Databases configs
 DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL'))
+    'default': dj_database_url.parse(
+        config('DATABASE_URL'),
+        conn_max_age=600,  # Mantém a conexão viva por 10 minutos
+    )
 }
 DATABASES['default']['OPTIONS'] = {
     'sslmode': 'require'
