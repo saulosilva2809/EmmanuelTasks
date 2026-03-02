@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     # apps
     'apps.authentication',
     'apps.base',
+    'apps.project',
 ]
 
 MIDDLEWARE = [
