@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # api
-    path('api/v1/', include('apps.api_v1_urls')),
+    path('api/v1/', include('urls.api_v1_urls')),
 
     # doc
     path('api/v1/schema/', SpectacularV1APIView.as_view(urlconf='apps.api_v1_urls'), name='schema-v1'),
