@@ -110,3 +110,6 @@ SPECTACULAR_SETTINGS  = {
     'DESCRIPTION': 'Documentação da API',
     'VERSION': 'Current',
 }
+
+# UserModel
+AUTH_USER_MODEL = 'authentication.UserModel'

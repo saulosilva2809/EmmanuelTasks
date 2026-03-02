@@ -10,5 +10,10 @@ class UserModel(BaseModel, AbstractUser):
 
     email = models.EmailField(unique=True)
 
+    class Meta:
+        ordering = ['-created_at'] 
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+
     def __str__(self):
         return self.email
