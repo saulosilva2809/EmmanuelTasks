@@ -1,5 +1,6 @@
 import dj_database_url
 
+from datetime import timedelta
 from decouple import config, Csv
 from pathlib import Path
 
@@ -109,6 +110,19 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# JWT Settings 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    # Se True, ao dar Refresh, você recebe um novo Refresh Token também
+    'ROTATE_REFRESH_TOKENS': False,
+    # Se True, o Refresh Token antigo vai para uma Blacklist (precisa de app instalado)
+    'BLACKLIST_AFTER_ROTATION': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 # Docs settings
