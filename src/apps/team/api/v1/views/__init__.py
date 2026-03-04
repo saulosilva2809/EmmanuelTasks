@@ -1,3 +1,4 @@
 from .team_view import (
-    ListCreateTeamView
+    ListCreateTeamView,
+    RetrieveUpdateDestroyTeamView
 )
