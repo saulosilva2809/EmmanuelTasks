@@ -1,7 +1,4 @@
-version: "3.9"
-
 services:
-
   # =========================
   # REDIS
   # =========================
@@ -19,11 +16,14 @@ services:
     container_name: emmanueltasks_migrate
     env_file:
       - .env
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
     depends_on:
       - redis
     working_dir: /app/src
     volumes:
-      - ./src:/app/src
+      - ./src:/app/src:delegated
     entrypoint: /entrypoint.migrate.sh
     command: python manage.py migrate --noinput
 
@@ -40,9 +40,12 @@ services:
         condition: service_started
     env_file:
       - .env
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
     working_dir: /app/src
     volumes:
-      - ./src:/app/src
+      - ./src:/app/src:delegated
     ports:
       - "8000:8000"
     entrypoint: /entrypoint.no-migrate.sh
@@ -58,9 +61,12 @@ services:
       - redis
     env_file:
       - .env
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
     working_dir: /app/src
     volumes:
-      - ./src:/app/src
+      - ./src:/app/src:delegated
     entrypoint: /entrypoint.no-migrate.sh
     command: celery -A core worker -l info
 
@@ -75,9 +81,12 @@ services:
         condition: service_completed_successfully
     env_file:
       - .env
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
     working_dir: /app/src
     volumes:
-      - ./src:/app/src
+      - ./src:/app/src:delegated
     entrypoint: /entrypoint.no-migrate.sh
     command: celery -A core beat -l info
 
@@ -91,11 +100,13 @@ services:
       - redis
     env_file:
       - .env
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
     working_dir: /app/src
     volumes:
-      - ./src:/app/src
+      - ./src:/app/src:delegated
     ports:
       - "5555:5555"
     entrypoint: /entrypoint.no-migrate.sh
     command: celery -A core flower --port=5555
-  
