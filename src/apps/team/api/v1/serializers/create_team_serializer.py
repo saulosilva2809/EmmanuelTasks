@@ -4,7 +4,7 @@ from apps.authentication.models import UserModel
 from apps.team.models import TeamModel
 
 
-class CreateUpdateTeamSerializer(serializers.ModelSerializer):
+class CreateTeamSerializer(serializers.ModelSerializer):
     manager = serializers.PrimaryKeyRelatedField(
         queryset=UserModel.objects.all(), 
         required=False, 
