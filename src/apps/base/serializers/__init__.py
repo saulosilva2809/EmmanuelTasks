@@ -1,0 +1,1 @@
+from .user_mini_serializer import UserMinSerializer
