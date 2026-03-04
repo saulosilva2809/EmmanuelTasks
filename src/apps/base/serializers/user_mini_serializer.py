@@ -10,7 +10,7 @@ class UserMinSerializer(serializers.ModelSerializer):
         model = UserModel
         fields = ('id', 'full_name')
 
-    def get_full_name(self, obj):
+    def get_full_name(self, obj) -> str:
         if obj.first_name or obj.last_name:
             return f'{obj.first_name} {obj.last_name}'.strip()
         return obj.email
