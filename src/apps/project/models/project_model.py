@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.text import slugify
 
 from apps.base.models import BaseModel, SoftDeleteModel
 
@@ -40,10 +39,3 @@ class ProjectModel(BaseModel, SoftDeleteModel):
 
     def __str__(self):
         return self.name
-
-    def _set_slug(self):
-        return slugify(self.name)
-
-    def save(self, *args, **kwargs):
-        self.slug = self._set_slug()
-        return super().save(*args, **kwargs)
