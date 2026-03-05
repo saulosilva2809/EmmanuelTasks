@@ -38,20 +38,3 @@ class SprintModel(BaseModel, SoftDeleteModel):
 
     def __str__(self):
         return f'{self.team.name} - {self.name} ({self.project.name})'
-
-    def clean(self):
-        if self.status == self.StatusChoices.ACTIVE:
-            active_sprints = SprintModel.objects.filter(
-                team=self.team,
-                status=self.StatusChoices.ACTIVE
-            ).exclude(pk=self.pk) # ignora a própria sprint se for um update
-
-            if active_sprints.exists():
-                raise ValidationError(
-                    f'A equipe {self.team.name} já possui uma Sprint ativa. '
-                    'Finalize a atual antes de iniciar uma nova.'
-                )
-
-    def save(self, *args, **kwargs):
-        self.full_clean() # chame o método clean
-        return super().save(*args, **kwargs)
