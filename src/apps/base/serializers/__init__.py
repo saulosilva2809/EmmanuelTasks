@@ -1,1 +1,2 @@
-from .user_mini_serializer import UserMinSerializer
+from .team_min_serializer import TeamMinSerializer
+from .user_min_serializer import UserMinSerializer
