@@ -41,6 +41,6 @@ RetrieveUpdateDestroyTeamView = extend_schema_view(
     delete=extend_schema(
         tags=['Team'],
         summary='Excluir um time específico',
-        description='Exclui um time específico',
+        description='Exclui um time específico (soft delete)',
     ),
 )(RetrieveUpdateDestroyTeamView)
