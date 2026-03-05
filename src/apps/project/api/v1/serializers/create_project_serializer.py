@@ -19,3 +19,13 @@ class CreateProjectSerializer(serializers.ModelSerializer):
             'slug',
             'teams'
         ]
+
+    def validate(self, data):
+        start_date = data.get('start_date') or self.instance.start_date
+        term = data.get('term') or self.instance.term
+        
+        if start_date > term:
+            raise serializers.ValidationError(
+                {'term': 'A data de prazo não pode ser anterior à data de início.'}
+            )
+        return data
