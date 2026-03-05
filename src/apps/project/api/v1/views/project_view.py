@@ -3,6 +3,7 @@ from rest_framework import generics, permissions
 from apps.project.api.v1.serializers import (
     CreateProjectSerializer,
     ListProjectSerializer,
+    UpdateProjectSerializer,
 )
 from apps.base.pagination import PaginationAPI
 from apps.project.selectors import ProjectSelector
@@ -28,3 +29,22 @@ class ListCreateProjectView(generics.ListCreateAPIView):
         )
 
         serializer.instance = project_instance
+
+
+class RetrieveUpdateDestroyProjectView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PaginationAPI
+
+    def get_queryset(self):
+        return ProjectSelector.get_all_by_user(self.request.user)
+    
+    def get_serializer_class(self):
+        if self.request.method in ['PATCH', 'PUT']:
+            return UpdateProjectSerializer
+        return ListProjectSerializer
+    
+    def perform_update(self, serializer):
+        ProjectService.update_project(
+            serializer.validated_data,
+            serializer.instance
+        )

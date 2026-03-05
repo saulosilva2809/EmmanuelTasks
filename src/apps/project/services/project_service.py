@@ -20,13 +20,34 @@ class ProjectService:
             project.teams.set(teams)
 
         return project
-    
+
     @staticmethod
-    def _set_slug(name):
+    def _set_slug(name, exclude_id=None):
         slug = slugify(name)
         unique_slug = slug
+        
+        queryset = ProjectModel.objects.filter(slug=unique_slug)
+        if exclude_id:
+            queryset = queryset.exclude(id=exclude_id)
 
-        while ProjectModel.objects.filter(slug=slug).exists():
+        while queryset.exists():
             unique_slug = f'{slug}-{uuid.uuid4().hex[:4]}'
+            queryset = ProjectModel.objects.filter(slug=unique_slug)
+            if exclude_id:
+                queryset = queryset.exclude(id=exclude_id)
 
         return unique_slug
+
+    @staticmethod
+    def update_project(validated_data: dict, instance: ProjectModel):
+        old_name = validated_data.get('name')
+
+        if old_name and old_name != instance.name:
+            new_slug = ProjectService._set_slug(validated_data['name'], exclude_id=instance.id)
+            instance.slug = new_slug
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        return instance

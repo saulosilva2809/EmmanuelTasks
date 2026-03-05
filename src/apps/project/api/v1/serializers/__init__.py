@@ -1,2 +1,3 @@
 from .create_project_serializer import CreateProjectSerializer
 from .list_project_serializer import ListProjectSerializer
+from .update_project_serializer import UpdateProjectSerializer
