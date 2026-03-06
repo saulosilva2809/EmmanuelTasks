@@ -5,6 +5,8 @@ from .views import (
     RetrieveUpdateDestroySprintView,
 )
 
+from .docs import schemas
+
 
 urlpatterns = [
     path('', view=ListCreateSprintView.as_view(), name='list_create_sprint_view'),
