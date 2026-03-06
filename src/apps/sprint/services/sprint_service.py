@@ -20,7 +20,7 @@ class SprintService:
 
         if project and team:
             if not project.teams.filter(pk=team.pk).exists():
-                raise ValidationError(f'A equipe {team.name} não pertence ao projeto {project.name}.')
+                raise ValidationError(f'Esta equipe não percente a este projeto.')
 
         if status == SprintModel.StatusChoices.ACTIVE:
             active_qs = SprintModel.objects.filter(
