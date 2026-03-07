@@ -5,6 +5,8 @@ from .views import (
     RetrieveUpdateDestroyTaskView,
 )
 
+from .docs import schemas
+
 
 urlpatterns = [
     path('', view=ListCreateTaskView.as_view(), name='list_create_task_view'),
