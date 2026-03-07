@@ -10,4 +10,4 @@ class TeamMinSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamModel
-        fields = ('name', 'manager')
+        fields = ('id', 'name', 'manager')

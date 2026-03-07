@@ -10,4 +10,4 @@ class ProjectMinSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectModel
-        fields = ('name', 'owner', 'status')
+        fields = ('id', 'name', 'owner', 'status')

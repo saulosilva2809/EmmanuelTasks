@@ -10,6 +10,7 @@ class CreateProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectModel
         fields = [
+            'id',
             'owner',
             'name',
             'description',
@@ -19,6 +20,7 @@ class CreateProjectSerializer(serializers.ModelSerializer):
             'slug',
             'teams'
         ]
+        read_only_fields = ['id']
 
     def validate(self, data):
         start_date = data.get('start_date') or self.instance.start_date
