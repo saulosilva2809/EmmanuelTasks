@@ -1,3 +1,4 @@
 from .project_min_serializer import ProjectMinSerializer
+from .sprint_min_serializer import SprintMinSerializer
 from .team_min_serializer import TeamMinSerializer
 from .user_min_serializer import UserMinSerializer
