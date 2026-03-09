@@ -1,3 +1,6 @@
-from .create_team_serializer import CreateTeamSerializer
-from .list_team_serializer import ListTeamSerializer
-from .update_team_serializer import UpdateTeamSerializer
+from .team.create_team_serializer import CreateTeamSerializer
+from .team.list_team_serializer import ListTeamSerializer
+from .team.update_team_serializer import UpdateTeamSerializer
+
+from .team_member.create_team_member_serializer import CreateTeamMemberSerializer
+from .team_member.list_team_member_serializer import ListTeamMemberSerializer

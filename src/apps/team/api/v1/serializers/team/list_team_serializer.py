@@ -6,8 +6,7 @@ from apps.base.serializers import UserMinSerializer
 
 class ListTeamSerializer(serializers.ModelSerializer):
     manager = UserMinSerializer(read_only=True)
-    members = UserMinSerializer(many=True, read_only=True)
 
     class Meta:
         model = TeamModel
-        fields = ('id', 'name', 'description', 'manager', 'members')
+        fields = ('id', 'name', 'description', 'manager')
