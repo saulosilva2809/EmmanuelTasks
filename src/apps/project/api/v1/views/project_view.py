@@ -6,6 +6,7 @@ from apps.project.api.v1.serializers import (
     UpdateProjectSerializer,
 )
 from apps.base.pagination import PaginationAPI
+from apps.project.permissions import IsProjectOwner
 from apps.project.selectors import ProjectSelector
 from apps.project.services import ProjectService
 
@@ -32,7 +33,7 @@ class ListCreateProjectView(generics.ListCreateAPIView):
 
 
 class RetrieveUpdateDestroyProjectView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsProjectOwner]
     pagination_class = PaginationAPI
 
     def get_queryset(self):
