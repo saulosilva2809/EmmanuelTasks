@@ -1,9 +1,19 @@
 from django.contrib import admin
 
-from .models import TeamModel
+from .models import TeamModel, TeamMemberModel
+
+
+class TeamMemberInline(admin.TabularInline):
+    model = TeamMemberModel
+    extra = 1  # Quantidade de linhas vazias para novos membros
 
 @admin.register(TeamModel)
 class TeamAdmin(admin.ModelAdmin):
     list_display = ['name', 'manager', 'created_at']
-    search_fields = ['name']
-    filter_horizontal = ['members'] # cria caixa de seleção lateral
+    list_filter = ['created_at']
+    inlines = [TeamMemberInline] # Adiciona a lista de membros aqui
+
+@admin.register(TeamMemberModel)
+class TeamMemberAdmin(admin.ModelAdmin):
+    list_display = ['user', 'team', 'project', 'role', 'created_at']
+    list_filter = ['role', 'team', 'project']
