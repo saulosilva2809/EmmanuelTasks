@@ -15,7 +15,6 @@ from apps.team.services import TeamMemberService
 
 
 class ListCreateTeamMemberView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
     pagination_class = PaginationAPI
 
     def get_queryset(self):
@@ -34,6 +33,8 @@ class ListCreateTeamMemberView(generics.ListCreateAPIView):
         return [(permissions.IsAuthenticated & (IsProjectOwner | IsTeamManager | IsTeamMember))()]
 
     def perform_create(self, serializer):
+        team_id = self.kwargs.get('team_id')
+        serializer.validated_data['team_id'] = team_id
         instance = TeamMemberService.create_team_member(serializer.validated_data)
 
         serializer.instance = instance
