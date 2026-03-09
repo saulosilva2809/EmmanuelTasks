@@ -1,6 +1,7 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
 
 from apps.base.pagination import PaginationAPI
+from apps.base.permissions import IsManagerOrOwner
 from apps.sprint.api.v1.serializers import (
     CreateUpdateSprintSerializer,
     ListSprintSerializer
@@ -10,7 +11,7 @@ from apps.sprint.services import SprintService
 
 
 class ListCreateSprintView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsManagerOrOwner]
     pagination_class = PaginationAPI
 
     def get_queryset(self):
@@ -27,7 +28,7 @@ class ListCreateSprintView(generics.ListCreateAPIView):
 
 
 class RetrieveUpdateDestroySprintView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsManagerOrOwner]
     pagination_class = PaginationAPI
 
     def get_queryset(self):

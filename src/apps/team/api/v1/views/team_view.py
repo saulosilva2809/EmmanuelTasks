@@ -6,12 +6,13 @@ from apps.team.api.v1.serializers import (
     UpdateTeamSerializer,
 )
 from apps.base.pagination import PaginationAPI
+from apps.base.permissions import IsManagerOrOwner
 from apps.team.selectors import TeamSelector
 from apps.team.services import TeamService
 
 
 class ListCreateTeamView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsManagerOrOwner]
     pagination_class = PaginationAPI
 
     def get_queryset(self):
@@ -32,7 +33,7 @@ class ListCreateTeamView(generics.ListCreateAPIView):
 
 
 class RetrieveUpdateDestroyTeamView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsManagerOrOwner]
     pagination_class = PaginationAPI
 
     def get_queryset(self):

@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
 
 from apps.project.api.v1.serializers import (
     CreateProjectSerializer,
@@ -6,13 +6,13 @@ from apps.project.api.v1.serializers import (
     UpdateProjectSerializer,
 )
 from apps.base.pagination import PaginationAPI
-from apps.project.permissions import IsProjectOwner
+from apps.base.permissions import IsManagerOrOwner
 from apps.project.selectors import ProjectSelector
 from apps.project.services import ProjectService
 
 
 class ListCreateProjectView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsManagerOrOwner]
     pagination_class = PaginationAPI
 
     def get_queryset(self):
@@ -33,7 +33,7 @@ class ListCreateProjectView(generics.ListCreateAPIView):
 
 
 class RetrieveUpdateDestroyProjectView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated, IsProjectOwner]
+    permission_classes = [IsManagerOrOwner]
     pagination_class = PaginationAPI
 
     def get_queryset(self):

@@ -1,6 +1,7 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
 
 from apps.base.pagination import PaginationAPI
+from apps.base.permissions import IsManagerOrOwner
 from apps.task.api.v1.serializers import (
     CreateUpdateTaskSerializer,
     ListTaskSerializer
@@ -10,7 +11,7 @@ from apps.task.services import TaskService
 
 
 class ListCreateTaskView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsManagerOrOwner]
     pagination_class = PaginationAPI
 
     def get_queryset(self):
@@ -27,7 +28,7 @@ class ListCreateTaskView(generics.ListCreateAPIView):
 
 
 class RetrieveUpdateDestroyTaskView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsManagerOrOwner]
     pagination_class = PaginationAPI
 
     def get_queryset(self):
