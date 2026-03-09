@@ -38,3 +38,15 @@ class ListCreateTeamMemberView(generics.ListCreateAPIView):
         instance = TeamMemberService.create_team_member(serializer.validated_data)
 
         serializer.instance = instance
+
+
+class RemoveTeamMemberView(generics.DestroyAPIView):
+    lookup_url_kwarg = 'member_id' 
+    
+    def get_queryset(self):
+        team_id = self.kwargs.get('team_id')
+        return TeamMemberSelector.get_all_by_team(team_id)
+
+    def get_permissions(self):
+        if self.request.method == 'DELETE':
+            return [(permissions.IsAuthenticated & (IsProjectOwner | IsTeamManager))()]
