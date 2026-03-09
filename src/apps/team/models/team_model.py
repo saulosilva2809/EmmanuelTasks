@@ -11,11 +11,6 @@ class TeamModel(BaseModel, SoftDeleteModel):
         on_delete=models.PROTECT,
         related_name='managed_teams'
     )
-    members = models.ManyToManyField(
-        'authentication.UserModel',
-        related_name='teams',
-        blank=True
-    )
 
     class Meta:
         ordering = ['-created_at'] 
