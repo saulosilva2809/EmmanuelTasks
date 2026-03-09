@@ -2,8 +2,10 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from apps.team.api.v1.serializers import ListTeamSerializer
 from apps.team.api.v1.views import (
+    ListCreateTeamMemberView,
     ListCreateTeamView,
-    RetrieveUpdateDestroyTeamView
+    RemoveTeamMemberView,
+    RetrieveUpdateDestroyTeamView,
 )
 
 
@@ -44,3 +46,26 @@ RetrieveUpdateDestroyTeamView = extend_schema_view(
         description='Exclui um time específico (soft delete)',
     ),
 )(RetrieveUpdateDestroyTeamView)
+
+
+ListCreateTeamMemberView = extend_schema_view(
+    get=extend_schema(
+        tags=['Team Member'],
+        summary='Listar membros',
+        description='Lista todos os membros de um time.'
+    ),
+    post=extend_schema(
+        tags=['Team Member'],
+        summary='Adicionar um membros',
+        description='Adiciona um membro em um time.'
+    ),
+)(ListCreateTeamMemberView)
+
+RemoveTeamMemberView = extend_schema_view(
+    delete=extend_schema(
+        tags=['Team Member'],
+        summary='Deletar membro',
+        description='Deleta um membro de um time.',
+        responses={204: None}
+    )
+)(RemoveTeamMemberView)
