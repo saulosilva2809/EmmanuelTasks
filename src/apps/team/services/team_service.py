@@ -9,11 +9,6 @@ class TeamService:
         if not validated_data.get('manager'):
             validated_data['manager'] = creator
 
-        # remove membros temporariamente antes de criar o team
-        members_data = validated_data.pop('members', [])
         team = TeamModel.objects.create(**validated_data)
-        
-        if members_data:
-            team.members.set(members_data)
-            
+
         return team
