@@ -8,11 +8,11 @@ class ProjectSelector:
     @staticmethod
     def get_all_by_user(user: UserModel) -> QuerySet[ProjectModel]:
         return ProjectModel.objects.filter(
-            Q(owner=user) | Q(teams__manager=user) | Q(teams__members=user)
-        ).distinct().select_related(
+            Q(owner=user) | Q(teams__manager=user) | Q(teams__team_members__user=user)
+        ).select_related(
             'owner'
         ).prefetch_related(
             'teams',
             'teams__manager',
-            'teams__members'
-        )
+            'teams__team_members__user'
+        ).distinct()

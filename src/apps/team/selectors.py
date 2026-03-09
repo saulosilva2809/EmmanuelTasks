@@ -8,11 +8,11 @@ class TeamSelector:
     @staticmethod
     def get_all_by_user(user: UserModel) -> QuerySet[TeamModel]:
         return TeamModel.objects.filter(
-            Q(manager=user) | Q(members=user)
+            Q(manager=user) | Q(team_members__user=user)
         ).select_related(
             'manager'
         ).prefetch_related(
-            'members'
+            'team_members__user'
         ).distinct() # distinct é importante aqui para não repetir o time se ele for manager e member ao mesmo tempo
 
 class TeamMemberSelector:
