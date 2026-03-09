@@ -18,6 +18,8 @@ class TeamSelector:
 class TeamMemberSelector:
     @staticmethod
     def get_all_by_team(team_id: int) -> QuerySet[TeamMemberModel]:
+        if not team_id:
+            return TeamMemberModel.objects.none()
         return TeamMemberModel.objects.filter(
             team__id=team_id
         ).select_related(

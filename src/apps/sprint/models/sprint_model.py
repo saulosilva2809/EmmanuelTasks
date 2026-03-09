@@ -4,7 +4,7 @@ from apps.base.models import BaseModel, SoftDeleteModel
 
 
 class SprintModel(BaseModel, SoftDeleteModel):
-    class StatusChoices(models.TextChoices):
+    class SprintStatusChoices(models.TextChoices):
         PLANNING = 'PLANNING', 'Planejamento'
         ACTIVE = 'ACTIVE', 'Em Execução'
         COMPLETED = 'COMPLETED', 'Finalizada'
@@ -26,8 +26,8 @@ class SprintModel(BaseModel, SoftDeleteModel):
     end_date = models.DateField()
     status = models.CharField(
         max_length=20,
-        choices=StatusChoices.choices,
-        default=StatusChoices.PLANNING
+        choices=SprintStatusChoices.choices,
+        default=SprintStatusChoices.PLANNING
     )
 
     class Meta:

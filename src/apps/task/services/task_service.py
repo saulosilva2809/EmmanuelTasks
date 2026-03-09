@@ -29,7 +29,7 @@ class TaskService:
             if team and sprint.team != team:
                 raise ValidationError('Esta sprint não percente a esta equipe.')
 
-            if status == TaskModel.StatusChoices.BACKLOG:
+            if status == TaskModel.TaskStatusChoices.BACKLOG:
                 raise ValidationError('O status BACKLOG só pode ser usado quando a task não estiver associada a uma Sprint.')
             
         if responsible and team:

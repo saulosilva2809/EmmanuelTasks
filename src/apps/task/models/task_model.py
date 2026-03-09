@@ -10,7 +10,7 @@ class TaskModel(BaseModel, SoftDeleteModel):
         HIGH = 'HIGH', 'Alta'
         URGENT = 'URGENT', 'Urgente'
 
-    class StatusChoices(models.TextChoices):
+    class TaskStatusChoices(models.TextChoices):
         BACKLOG = 'BACKLOG', 'Backlog'
         TODO = 'TODO', 'A Fazer'
         IN_PROGRESS = 'IN_PROGRESS', 'Em Andamento'
@@ -21,8 +21,8 @@ class TaskModel(BaseModel, SoftDeleteModel):
     description = models.TextField(null=True, blank=True)
     status = models.CharField(
         max_length=20,
-        choices=StatusChoices.choices,
-        default=StatusChoices.BACKLOG
+        choices=TaskStatusChoices.choices,
+        default=TaskStatusChoices.BACKLOG
     )
     project = models.ForeignKey(
         'project.ProjectModel',

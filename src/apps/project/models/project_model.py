@@ -4,7 +4,7 @@ from apps.base.models import BaseModel, SoftDeleteModel
 
 
 class ProjectModel(BaseModel, SoftDeleteModel):
-    class StatusChoices(models.TextChoices):
+    class ProjectStatusChoices(models.TextChoices):
         PLANNING = 'PLANNING', 'Planejamento'
         ACTIVE = 'ACTIVE', 'Ativo'
         PAUSED = 'PAUSED', 'Pausado'
@@ -20,8 +20,8 @@ class ProjectModel(BaseModel, SoftDeleteModel):
     description = models.TextField(null=True, blank=True)
     status = models.CharField(
         max_length=20,
-        choices=StatusChoices.choices,
-        default=StatusChoices.PLANNING
+        choices=ProjectStatusChoices.choices,
+        default=ProjectStatusChoices.PLANNING
     )
     start_date = models.DateField()
     term = models.DateField()

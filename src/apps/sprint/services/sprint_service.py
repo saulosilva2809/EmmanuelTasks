@@ -22,10 +22,10 @@ class SprintService:
             if not project.teams.filter(pk=team.pk).exists():
                 raise ValidationError(f'Esta equipe não percente a este projeto.')
 
-        if status == SprintModel.StatusChoices.ACTIVE:
+        if status == SprintModel.SprintStatusChoices.ACTIVE:
             active_qs = SprintModel.objects.filter(
                 team=team, 
-                status=SprintModel.StatusChoices.ACTIVE
+                status=SprintModel.SprintStatusChoices.ACTIVE
             )
             # se for update ignoramos a própria sprint na busca
             if instance:
