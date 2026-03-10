@@ -1,8 +1,16 @@
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (
+    extend_schema,
+    extend_schema_view,
+    OpenApiParameter,
+)
 
+from apps.project.api.v1.serializers import ListProjectSerializer
 from apps.project.api.v1.views import (
+    AddTeamInProjectView,
     ListCreateProjectView,
     RetrieveUpdateDestroyProjectView,
+    RemoveTeamFromProjectView,
 )
 
 
@@ -42,3 +50,31 @@ RetrieveUpdateDestroyProjectView = extend_schema_view(
         description='Exclui um projeto específico (soft delete)'
     )
 )(RetrieveUpdateDestroyProjectView)
+
+
+AddTeamInProjectView = extend_schema_view(
+    post=extend_schema(
+        tags=['Project'],
+        summary='Adicionar um time no projeto',
+        description='Adiciona um time no projeto passado na url',
+        parameters=[
+            OpenApiParameter(
+                name='id',
+                type=OpenApiTypes.UUID,
+                location=OpenApiParameter.PATH,
+                description='ID do projeto'
+            )
+        ],
+        responses= {201: ListProjectSerializer}
+    )
+)(AddTeamInProjectView)
+
+
+RemoveTeamFromProjectView = extend_schema_view(
+    delete=extend_schema(
+        tags=['Project'],
+        summary='Remover um time no projeto',
+        description='Remove um time no projeto passado na url',
+        responses={200: ListProjectSerializer}
+    )
+)(RemoveTeamFromProjectView)
