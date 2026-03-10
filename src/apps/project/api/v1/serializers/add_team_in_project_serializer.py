@@ -1,5 +1,5 @@
 from rest_framework import serializers
 
 
-class AddRemoveTeamInProjectSerializer(serializers.Serializer):
+class AddTeamInProjectSerializer(serializers.Serializer):
     team_id = serializers.UUIDField(required=True)

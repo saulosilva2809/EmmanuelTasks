@@ -71,10 +71,8 @@ class ProjectService:
     
         
     @staticmethod
-    def remove_team_from_project(validated_data: dict, project_id: uuid.uuid4):
-        team_id = validated_data.get('team_id')
-
-        team = TeamModel.objects.get(id=team_id,)
+    def remove_team_from_project(team_id: uuid.uuid4, project_id: uuid.uuid4):
+        team = TeamModel.objects.get(id=team_id)
         project = ProjectModel.objects.get(id=project_id)
 
         if not project.teams.filter(id=team_id).exists():

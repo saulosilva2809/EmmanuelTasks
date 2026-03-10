@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 
 from apps.project.api.v1.serializers import (
-    AddRemoveTeamInProjectSerializer,
+    AddTeamInProjectSerializer,
     CreateProjectSerializer,
     ListProjectSerializer,
     UpdateProjectSerializer,
@@ -56,7 +56,7 @@ class RetrieveUpdateDestroyProjectView(generics.RetrieveUpdateDestroyAPIView):
 
 class AddTeamInProjectView(generics.CreateAPIView):
     permission_classes = [IsManagerOrOwner]
-    serializer_class = AddRemoveTeamInProjectSerializer
+    serializer_class = AddTeamInProjectSerializer
 
     def get_queryset(self):
         return TeamSelector.get_all_by_user(self.request.user)
@@ -78,18 +78,15 @@ class AddTeamInProjectView(generics.CreateAPIView):
 
 class RemoveTeamFromProjectView(generics.DestroyAPIView):
     permission_classes = [IsManagerOrOwner]
-    serializer_class = AddRemoveTeamInProjectSerializer
 
     def get_queryset(self):
         return TeamSelector.get_all_by_user(self.request.user)
 
     def destroy(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        project_id = self.kwargs.get('pk')
+        team_id = self.kwargs.get('team_id')
+        project_id = self.kwargs.get('project_id')
         updated_project = ProjectService.remove_team_from_project(
-            serializer.validated_data,
+            team_id,
             project_id
         )
 
