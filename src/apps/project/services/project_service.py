@@ -1,9 +1,11 @@
 import uuid
 
 from django.utils.text import slugify
+from rest_framework.validators import ValidationError
 
 from apps.authentication.models import UserModel
 from apps.project.models import ProjectModel
+from apps.team.models import TeamModel
 
 
 class ProjectService:
@@ -51,3 +53,33 @@ class ProjectService:
         
         instance.save()
         return instance
+    
+        
+    @staticmethod
+    def add_team_in_project(validated_data: dict, project_id: uuid.uuid4):
+        team_id = validated_data.get('team_id')
+
+        team = TeamModel.objects.get(id=team_id,)
+        project = ProjectModel.objects.get(id=project_id)
+
+        if project.teams.filter(id=team_id).exists():
+            raise ValidationError('Essa equipe já está neste projeto.')
+        
+        project.teams.add(team)
+
+        return project
+    
+        
+    @staticmethod
+    def remove_team_from_project(validated_data: dict, project_id: uuid.uuid4):
+        team_id = validated_data.get('team_id')
+
+        team = TeamModel.objects.get(id=team_id,)
+        project = ProjectModel.objects.get(id=project_id)
+
+        if not project.teams.filter(id=team_id).exists():
+            raise ValidationError('Essa equipe não está neste projeto.')
+        
+        project.teams.remove(team)
+
+        return project
