@@ -76,7 +76,7 @@ class AddTeamInProjectView(generics.CreateAPIView):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
 
-class RemoveTeamFromProject(generics.DestroyAPIView):
+class RemoveTeamFromProjectView(generics.DestroyAPIView):
     permission_classes = [IsManagerOrOwner]
     serializer_class = AddRemoveTeamInProjectSerializer
 
@@ -95,4 +95,4 @@ class RemoveTeamFromProject(generics.DestroyAPIView):
 
         response_serializer = ListProjectSerializer(updated_project)
 
-        return Response(response_serializer.data, status=status.HTTP_204_NO_CONTENT)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
