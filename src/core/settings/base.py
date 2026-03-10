@@ -131,11 +131,15 @@ SPECTACULAR_SETTINGS  = {
     'DESCRIPTION': 'Documentação da API',
     'VERSION': 'Current',
 
-    'ENUM_NAME_OVERRIDES': {},
+    'ENUM_NAME_OVERRIDES': {
+    'ProjectStatus': 'apps.project.models.ProjectModel.ProjectStatusChoices',
+    'TaskStatus': 'apps.task.models.TaskModel.TaskStatusChoices',
+    'SprintStatus': 'apps.sprint.models.SprintModel.SprintStatusChoices',
+    },
+
     'POSTPROCESSING_HOOKS': [
         'drf_spectacular.hooks.postprocess_schema_enums',
     ],
-    # Isso ajuda a evitar o conflito usando o nome da classe:
     'COMPONENT_SPLIT_PATCH': True,
     'COMPONENT_SPLIT_REQUEST': True,
 }
