@@ -1,6 +1,7 @@
 from rest_framework import permissions
 
-from apps.team.models import TeamMemberModel
+from apps.project.models import ProjectModel
+from apps.team.models import TeamModel
 
 
 class IsManagerOrOwner(permissions.BasePermission):
@@ -8,16 +9,17 @@ class IsManagerOrOwner(permissions.BasePermission):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        project_owner = getattr(obj, 'project', obj).owner 
-        if project_owner == request.user:
-            return True
+        if isinstance(obj, ProjectModel):
+            print(f'OWNER: {obj.owner}', flush=True)
+            print(f'USER: {request.user}', flush=True)
+            if obj.owner == request.user:
+                return True
 
-        team = getattr(obj, 'team', None)
-        if team:
-            return TeamMemberModel.objects.filter(
-                team=team,
-                user=request.user,
-                role=TeamMemberModel.RoleChoices.MANAGER
-            ).exists()
+        elif isinstance(obj, TeamModel):
+            if obj.manager == request.user or ProjectModel.objects.filter(
+                teams=obj,
+                owner=request.user
+            ).exists():
+                return True
 
         return False
