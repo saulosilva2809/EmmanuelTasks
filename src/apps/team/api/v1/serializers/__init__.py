@@ -1,3 +1,4 @@
+from .team.change_team_manager_serializer import ChangeTeamManagerSerializer
 from .team.create_team_serializer import CreateTeamSerializer
 from .team.list_team_serializer import ListTeamSerializer
 from .team.update_team_serializer import UpdateTeamSerializer

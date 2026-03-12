@@ -3,6 +3,7 @@ from .team_member_view import (
     RemoveTeamMemberView,
 )
 from .team_view import (
+    ChangeTeamManagerView,
     ListCreateTeamView,
-    RetrieveUpdateDestroyTeamView
+    RetrieveUpdateDestroyTeamView,
 )
