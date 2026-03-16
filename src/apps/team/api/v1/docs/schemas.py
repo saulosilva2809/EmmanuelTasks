@@ -2,6 +2,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from apps.team.api.v1.serializers import ListTeamSerializer
 from apps.team.api.v1.views import (
+    ChangeTeamManagerView,
     ListCreateTeamMemberView,
     ListCreateTeamView,
     RemoveTeamMemberView,
@@ -69,3 +70,17 @@ RemoveTeamMemberView = extend_schema_view(
         responses={204: None}
     )
 )(RemoveTeamMemberView)
+
+
+ChangeTeamManagerView = extend_schema_view(
+    put=extend_schema(
+        tags=['Team'],
+        summary='Alterar gerente',
+        description='Altera gerente da equipe'
+    ),
+    patch=extend_schema(
+        tags=['Team'],
+        summary='Alterar gerente',
+        description='Altera gerente da equipe'
+    ),
+)(ChangeTeamManagerView)
