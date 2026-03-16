@@ -3,6 +3,7 @@ from rest_framework.response import Response
 
 from apps.project.api.v1.serializers import (
     AddTeamInProjectSerializer,
+    ChangeProjectOwnerSerializer,
     CreateProjectSerializer,
     ListProjectSerializer,
     UpdateProjectSerializer,
@@ -93,3 +94,25 @@ class RemoveTeamFromProjectView(generics.DestroyAPIView):
         response_serializer = ListProjectSerializer(updated_project)
 
         return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+
+class ChangeProjectOwnerView(generics.UpdateAPIView):
+    lookup_url_kwarg = 'project_id'
+    permission_classes = [IsManagerOrOwner]
+    serializer_class = ChangeProjectOwnerSerializer
+    
+    def get_queryset(self):
+        return ProjectSelector.get_all_by_user(self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        project = self.get_object()
+        updated_project = ProjectService.change_owner_project(
+            serializer.validated_data,
+            project
+        )
+
+        respose_serializer = ListProjectSerializer(updated_project)
+        return Response(respose_serializer.data, status=status.HTTP_200_OK)

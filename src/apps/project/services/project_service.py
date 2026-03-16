@@ -1,6 +1,7 @@
 import uuid
 
 from django.utils.text import slugify
+from django.shortcuts import get_object_or_404
 from rest_framework.validators import ValidationError
 
 from apps.authentication.models import UserModel
@@ -79,5 +80,16 @@ class ProjectService:
             raise ValidationError('Essa equipe não está neste projeto.')
         
         project.teams.remove(team)
+
+        return project
+    
+    @staticmethod
+    def change_owner_project(validated_data: dict, project: ProjectModel):
+        # atualizar permissões 
+        new_owner_id = validated_data.get('new_owner')
+        new_owner = get_object_or_404(UserModel, id=new_owner_id)
+
+        project.owner = new_owner
+        project.save()
 
         return project
