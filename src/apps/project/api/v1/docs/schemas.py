@@ -8,6 +8,7 @@ from drf_spectacular.utils import (
 from apps.project.api.v1.serializers import ListProjectSerializer
 from apps.project.api.v1.views import (
     AddTeamInProjectView,
+    ChangeProjectOwnerView,
     ListCreateProjectView,
     RetrieveUpdateDestroyProjectView,
     RemoveTeamFromProjectView,
@@ -78,3 +79,17 @@ RemoveTeamFromProjectView = extend_schema_view(
         responses={200: ListProjectSerializer}
     )
 )(RemoveTeamFromProjectView)
+
+
+ChangeProjectOwnerView = extend_schema_view(
+    put=extend_schema(
+        tags=['Project'],
+        summary='Alterar dono',
+        description='Altera dono do projeto'
+    ),
+    patch=extend_schema(
+        tags=['Project'],
+        summary='Alterar dono',
+        description='Altera dono do projeto'
+    ),
+)(ChangeProjectOwnerView)
