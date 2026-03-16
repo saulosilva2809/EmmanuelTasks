@@ -10,8 +10,6 @@ class IsManagerOrOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if isinstance(obj, ProjectModel):
-            print(f'OWNER: {obj.owner}', flush=True)
-            print(f'USER: {request.user}', flush=True)
             if obj.owner == request.user:
                 return True
 
