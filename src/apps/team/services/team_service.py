@@ -1,5 +1,5 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.validators import ValidationError
-from uuid import uuid4
 
 from apps.authentication.models import UserModel
 from apps.team.models import TeamModel, TeamMemberModel
@@ -18,7 +18,7 @@ class TeamService:
     @staticmethod
     def change_team_manager(validated_data: dict, team: TeamModel) -> TeamModel:
         new_manager_id = validated_data.get('new_manager_id')
-        new_manager = UserModel.objects.get(id=new_manager_id)
+        new_manager = get_object_or_404(UserModel, id=new_manager_id)
 
         if not TeamMemberModel.objects.filter(
             user=new_manager_id,

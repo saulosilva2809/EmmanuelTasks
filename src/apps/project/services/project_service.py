@@ -6,6 +6,7 @@ from rest_framework.validators import ValidationError
 
 from apps.authentication.models import UserModel
 from apps.project.models import ProjectModel
+from apps.project.selectors import ProjectSelector
 from apps.team.models import TeamModel
 
 
@@ -61,7 +62,7 @@ class ProjectService:
         team_id = validated_data.get('team_id')
 
         team = TeamModel.objects.get(id=team_id,)
-        project = ProjectModel.objects.get(id=project_id)
+        project = ProjectSelector.get_by_id(project_id)
 
         if project.teams.filter(id=team_id).exists():
             raise ValidationError('Essa equipe já está neste projeto.')
@@ -74,7 +75,7 @@ class ProjectService:
     @staticmethod
     def remove_team_from_project(team_id: uuid.uuid4, project_id: uuid.uuid4):
         team = TeamModel.objects.get(id=team_id)
-        project = ProjectModel.objects.get(id=project_id)
+        project = ProjectSelector.get_by_id(project_id)
 
         if not project.teams.filter(id=team_id).exists():
             raise ValidationError('Essa equipe não está neste projeto.')
