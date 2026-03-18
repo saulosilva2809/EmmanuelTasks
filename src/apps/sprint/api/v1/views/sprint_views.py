@@ -3,8 +3,9 @@ from rest_framework import generics
 from apps.base.pagination import PaginationAPI
 from apps.base.permissions import IsManagerOrOwner
 from apps.sprint.api.v1.serializers import (
-    CreateUpdateSprintSerializer,
-    ListSprintSerializer
+    CreateSprintSerializer,
+    ListSprintSerializer,
+    UpdateSprintSerializer
 )
 from apps.sprint.selectors import SprintSelector
 from apps.sprint.services import SprintService
@@ -19,7 +20,7 @@ class ListCreateSprintView(generics.ListCreateAPIView):
     
     def get_serializer_class(self):
         if self.request.method == 'POST':
-            return CreateUpdateSprintSerializer
+            return CreateSprintSerializer
         return ListSprintSerializer
     
     def perform_create(self, serializer):
@@ -36,7 +37,7 @@ class RetrieveUpdateDestroySprintView(generics.RetrieveUpdateDestroyAPIView):
     
     def get_serializer_class(self):
         if self.request.method in ['PATCH', 'PUT']:
-            return CreateUpdateSprintSerializer
+            return UpdateSprintSerializer
         return ListSprintSerializer
     
     def perform_update(self, serializer):

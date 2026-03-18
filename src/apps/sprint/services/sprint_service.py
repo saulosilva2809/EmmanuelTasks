@@ -8,23 +8,30 @@ class SprintService:
     def create_sprint(validated_data: dict) -> SprintModel:
         SprintService._validate_sprint_data(validated_data)
 
-        return SprintModel.objects.create(**validated_data)
+        teams = validated_data.pop('teams', None)
+        sprint = SprintModel.objects.create(**validated_data)
+
+        if teams:
+            sprint.teams.set(teams)
+
+        return sprint
 
     @staticmethod
     def _validate_sprint_data(data: dict, instance: SprintModel = None):
         project = data.get('project') or (instance.project if instance else None)
-        team = data.get('team') or (instance.team if instance else None)
-        status = data.get('status') or (instance.status if instance else SprintModel.StatusChoices.PLANNING)
+        teams = data.get('teams') or (list(instance.teams.all()) if instance else None)
+        status = data.get('status') or (instance.status if instance else SprintModel.SprintStatusChoices.PLANNING)
         start_date = data.get('start_date') or (instance.start_date if instance else None)
         end_date = data.get('end_date') or (instance.end_date if instance else None)
 
-        if project and team:
-            if not project.teams.filter(pk=team.pk).exists():
-                raise ValidationError(f'Esta equipe não percente a este projeto.')
+        if project and teams:
+            valid_teams_count = project.teams.filter(pk__in=[team.pk for team in teams]).count()
+            if valid_teams_count != len(teams):
+                raise ValidationError(f'Uma ou mais equipes não percentem a este projeto.')
 
         if status == SprintModel.SprintStatusChoices.ACTIVE:
             active_qs = SprintModel.objects.filter(
-                team=team, 
+                teams__in=teams, 
                 status=SprintModel.SprintStatusChoices.ACTIVE
             )
             # se for update ignoramos a própria sprint na busca
@@ -32,7 +39,10 @@ class SprintService:
                 active_qs = active_qs.exclude(pk=instance.pk)
             
             if active_qs.exists():
-                raise ValidationError(f'O time {team.name} já possui uma Sprint ativa.')
+                teams_names_list = active_qs.values_list('teams__name', flat=True).distinct()
+                teams_formatted = ', '.join(teams_names_list)
+
+                raise ValidationError(f'Os seguintes times já possuem uma Sprint ativa: {teams_formatted}.')
     
         if start_date and end_date:
             if start_date > end_date:

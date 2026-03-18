@@ -1,2 +1,3 @@
-from .create_update_sprint_serializer import CreateUpdateSprintSerializer
+from .create_sprint_serializer import CreateSprintSerializer
 from .list_sprint_serializer import ListSprintSerializer
+from .update_sprint_serializer import UpdateSprintSerializer

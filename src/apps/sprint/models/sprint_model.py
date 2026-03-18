@@ -15,10 +15,10 @@ class SprintModel(BaseModel, SoftDeleteModel):
         on_delete=models.CASCADE,
         related_name='sprints'
     )
-    team = models.ForeignKey(
+    teams = models.ManyToManyField(
         'team.TeamModel',
-        on_delete=models.CASCADE,
-        related_name='sprints'
+        related_name='sprints',
+        blank=True
     )
     name = models.CharField(max_length=150)
     goal = models.TextField(null=True, blank=True) # objetivo
@@ -36,4 +36,4 @@ class SprintModel(BaseModel, SoftDeleteModel):
         verbose_name_plural = 'Sprints'
 
     def __str__(self):
-        return f'{self.team.name} - {self.name} ({self.project.name})'
+        return f'{self.name} ({self.project.name})'

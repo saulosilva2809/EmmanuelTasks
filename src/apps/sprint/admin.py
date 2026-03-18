@@ -13,7 +13,7 @@ class TaskInline(admin.TabularInline):
 
 @admin.register(SprintModel)
 class SprintAdmin(admin.ModelAdmin):
-    list_display = ['name', 'team', 'project', 'status', 'start_date', 'end_date']
-    list_filter = ['status', 'team', 'project']
+    list_display = ['name', 'project', 'status', 'start_date', 'end_date']
+    list_filter = ['status', 'teams', 'project']
     search_fields = ['name', 'goal']
     inlines = [TaskInline]

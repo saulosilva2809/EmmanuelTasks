@@ -9,9 +9,10 @@ class SprintSelector:
     def get_all_by_user(user: UserModel) -> QuerySet[SprintModel]:
         return SprintModel.objects.filter(
             Q(project__owner=user) |
-            Q(team__manager=user) |
-            Q(team__team_members__user=user),
+            Q(teams__manager=user) |
+            Q(teams__team_members__user=user),
         ).select_related(
             'project',
-            'team',
+        ).prefetch_related(
+            'teams'
         ).distinct() # remover duplicatas
