@@ -1,11 +1,13 @@
 from rest_framework.validators import ValidationError
 
 from apps.sprint.models import SprintModel
+from apps.team.models import TeamModel
 
 
 class SprintService:
     @staticmethod
     def create_sprint(validated_data: dict) -> SprintModel:
+        SprintService._validate_project_and_teams(validated_data)
         SprintService._validate_sprint_data(validated_data)
 
         teams = validated_data.pop('teams', None)
@@ -15,18 +17,16 @@ class SprintService:
             sprint.teams.set(teams)
 
         return sprint
-
+    
     @staticmethod
-    def _validate_sprint_data(data: dict, instance: SprintModel = None):
+    def _validate_project_and_teams(data: dict, instance: SprintModel = None):
         project = data.get('project') or (instance.project if instance else None)
         teams = data.get('teams') or (list(instance.teams.all()) if instance else None)
         status = data.get('status') or (instance.status if instance else SprintModel.SprintStatusChoices.PLANNING)
-        start_date = data.get('start_date') or (instance.start_date if instance else None)
-        end_date = data.get('end_date') or (instance.end_date if instance else None)
 
         if project and teams:
-            valid_teams_count = project.teams.filter(pk__in=[team.pk for team in teams]).count()
-            if valid_teams_count != len(teams):
+            valid_teams = project.teams.filter(pk__in=[team.pk for team in teams])
+            if valid_teams.count() != len(teams):
                 raise ValidationError(f'Uma ou mais equipes não percentem a este projeto.')
 
         if status == SprintModel.SprintStatusChoices.ACTIVE:
@@ -41,9 +41,15 @@ class SprintService:
             if active_qs.exists():
                 teams_names_list = active_qs.values_list('teams__name', flat=True).distinct()
                 teams_formatted = ', '.join(teams_names_list)
-
+        
                 raise ValidationError(f'Os seguintes times já possuem uma Sprint ativa: {teams_formatted}.')
-    
+
+    @staticmethod
+    def _validate_sprint_data(data: dict, instance: SprintModel = None):
+        start_date = data.get('start_date') or (instance.start_date if instance else None)
+        end_date = data.get('end_date') or (instance.end_date if instance else None)
+        project = data.get('project') or (instance.project if instance else None)
+
         if start_date and end_date:
             if start_date > end_date:
                 raise ValidationError('A data inicial não pode ser maior que a data final.')
@@ -63,4 +69,19 @@ class SprintService:
             setattr(instance, attr, value)
         
         instance.save()
+        return instance
+    
+    @staticmethod
+    def add_team_in_sprint(instance: SprintModel, data: dict) -> SprintModel:
+        teams_id = data.get('teams')
+        teams = TeamModel.objects.filter(
+            id__in=teams_id
+        )
+        
+        data['teams'] = teams
+        SprintService._validate_project_and_teams(data, instance)
+
+        instance.teams.add(*teams) # * para indicar que é mais de um
+        instance.save()
+
         return instance
