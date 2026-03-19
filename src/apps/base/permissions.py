@@ -22,9 +22,6 @@ class IsManagerOrOwner(permissions.BasePermission):
                 return True
             
         elif isinstance(obj, SprintModel):
-            is_project_owner = obj.project.owner == request.user
-            is_team_manager = obj.teams.filter(manager=request.user).exists()
-    
-            return is_project_owner or is_team_manager
+            return obj.project.owner == request.user
 
         return False
