@@ -85,3 +85,21 @@ class SprintService:
         instance.save()
 
         return instance
+    
+    @staticmethod
+    def remove_team_from_sprint(instance: SprintModel, data: dict) -> SprintModel:
+        teams_id = data.get('teams')
+        SprintService._validate_remove_teams(instance, teams_id)
+
+        if teams_id:
+            instance.teams.remove(*teams_id)
+            instance.save()
+
+        return instance
+
+    @staticmethod
+    def _validate_remove_teams(sprint: SprintModel, teams_id: list):
+        count_teams_sprint = sprint.teams.filter(id__in=teams_id).count()
+
+        if count_teams_sprint != len(teams_id):
+            raise ValidationError('Um ou mais times informados não pertencem ao projeto')

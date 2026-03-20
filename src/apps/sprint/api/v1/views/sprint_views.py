@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from apps.base.pagination import PaginationAPI
 from apps.base.permissions import IsManagerOrOwner
 from apps.sprint.api.v1.serializers import (
-    AddTeamInSprintSerializer,
+    AddRemoveTeamInSprintSerializer,
     CreateSprintSerializer,
     ListSprintSerializer,
     UpdateSprintSerializer
@@ -51,7 +51,7 @@ class RetrieveUpdateDestroySprintView(generics.RetrieveUpdateDestroyAPIView):
 
 class AddTeamInSprintView(generics.CreateAPIView):
     permission_classes = [IsManagerOrOwner]
-    serializer_class = AddTeamInSprintSerializer
+    serializer_class = AddRemoveTeamInSprintSerializer
 
     def get_queryset(self):
         return SprintSelector.get_all_by_user(self.request.user)
@@ -66,4 +66,24 @@ class AddTeamInSprintView(generics.CreateAPIView):
         )
 
         response = ListSprintSerializer(sprint)
+        return Response(response.data, status=status.HTTP_200_OK)
+
+
+class RemoveTeamFromSprintView(generics.DestroyAPIView):
+    permission_classes = [IsManagerOrOwner]
+    serializer_class = AddRemoveTeamInSprintSerializer
+
+    def get_queryset(self):
+        return SprintSelector.get_all_by_user(self.request.user)
+    
+    def destroy(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        sprint = SprintService.remove_team_from_sprint(
+            self.get_object(),
+            serializer.validated_data
+        )
+        response = ListSprintSerializer(sprint)
+
         return Response(response.data, status=status.HTTP_200_OK)

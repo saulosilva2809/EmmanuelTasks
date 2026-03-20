@@ -1,4 +1,4 @@
-from .add_team_in_sprint_serializer import AddTeamInSprintSerializer
+from .add_remove_team_in_sprint_serializer import AddRemoveTeamInSprintSerializer
 from .create_sprint_serializer import CreateSprintSerializer
 from .list_sprint_serializer import ListSprintSerializer
 from .update_sprint_serializer import UpdateSprintSerializer
