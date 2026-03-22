@@ -1,8 +1,10 @@
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from apps.sprint.api.v1.views import (
+    AddTeamInSprintView,
     ListCreateSprintView,
-    RetrieveUpdateDestroySprintView
+    RetrieveUpdateDestroySprintView,
+    RemoveTeamFromSprintView
 )
 
 
@@ -38,7 +40,25 @@ RetrieveUpdateDestroySprintView = extend_schema_view(
     ),
     delete=extend_schema(
         tags=['Sprint'],
-        summary='Exclui uma sprint específico',
+        summary='Excluir uma sprint específico',
         description='Exclui uma sprint específico (soft delete)'
     ),
 )(RetrieveUpdateDestroySprintView)
+
+
+AddTeamInSprintView = extend_schema_view(
+    post=extend_schema(
+        tags=['Sprint'],
+        summary='Adicionar um time em uma sprint',
+        description='Adiciona um time em uma sprint'
+    )
+)(AddTeamInSprintView)
+
+
+RemoveTeamFromSprintView = extend_schema_view(
+    delete=extend_schema(
+        tags=['Sprint'],
+        summary='Remover um time de uma sprint',
+        description='Remove um time de uma sprint'
+    )
+)(RemoveTeamFromSprintView)
