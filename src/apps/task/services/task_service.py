@@ -26,14 +26,14 @@ class TaskService:
             if project and sprint.project != project:
                 raise ValidationError('Esta sprint não percente a este projeto.')
 
-            if team and sprint.team != team:
+            if team and team not in sprint.teams.all():
                 raise ValidationError('Esta sprint não percente a esta equipe.')
 
             if status == TaskModel.TaskStatusChoices.BACKLOG:
                 raise ValidationError('O status BACKLOG só pode ser usado quando a task não estiver associada a uma Sprint.')
             
         if responsible and team:
-            if not team.members.filter(pk=responsible.pk).exists():
+            if not team.team_members.filter(user__pk=responsible.pk).exists():
                 raise ValidationError('Esse usuário não pode ser responsável por essa task pro não pertence ao projeto.')
     
     @staticmethod
