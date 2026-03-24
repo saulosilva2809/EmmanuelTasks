@@ -1,17 +1,14 @@
 from django.db.models import QuerySet, Q
 
 from apps.authentication.models import UserModel
-from apps.project.selectors import ProjectSelector
 from apps.team.models import TeamModel, TeamMemberModel
 
 
 class TeamSelector:
     @staticmethod
     def get_all_by_user(user: UserModel) -> QuerySet[TeamModel]:
-        projects = ProjectSelector.get_all_by_user(user)
-
         return TeamModel.objects.filter(
-            Q(manager=user) | Q(projects__in=projects)
+            Q(manager=user) | Q(team_members__user=user)
         ).select_related(
             'manager'
         ).prefetch_related(
