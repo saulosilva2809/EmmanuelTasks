@@ -3,6 +3,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('auth/', include('apps.authentication.api.v1.urls')),
+    path('', include('apps.base.api.v1.urls')),
     path('projects/', include('apps.project.api.v1.urls')),
     path('sprints/', include('apps.sprint.api.v1.urls')),
     path('tasks/', include('apps.task.api.v1.urls')),

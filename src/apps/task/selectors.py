@@ -10,7 +10,7 @@ class TaskSelector:
         return TaskModel.objects.filter(
             Q(project__owner=user) |
             Q(team__manager=user) |
-            Q(team__members=user)
+            Q(team__team_members__user=user)
         ).select_related(
             'project',
             'team',
