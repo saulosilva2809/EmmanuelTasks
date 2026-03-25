@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.base.models import BaseModel
+from apps.base.models import BaseModel, SoftDeleteModel
 
 
-class TeamMemberModel(BaseModel):
+class TeamMemberModel(BaseModel, SoftDeleteModel):
     class RoleChoices(models.TextChoices):
         MANAGER = 'MANAGER', 'Gerente de Time'
         MEMBER = 'MEMBER', 'Desenvolvedor'
