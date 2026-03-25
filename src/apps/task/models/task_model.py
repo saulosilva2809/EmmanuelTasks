@@ -24,6 +24,7 @@ class TaskModel(BaseModel, SoftDeleteModel):
         choices=TaskStatusChoices.choices,
         default=TaskStatusChoices.BACKLOG
     )
+    completed_at = models.DateTimeField(null=True, blank=True, editable=False)
     project = models.ForeignKey(
         'project.ProjectModel',
         on_delete=models.CASCADE,
@@ -62,3 +63,13 @@ class TaskModel(BaseModel, SoftDeleteModel):
 
     def __str__(self):
         return f'#{self.pk} - {self.title}'
+    
+    def save(self, *args, **kwargs):
+        if self.status == self.TaskStatusChoices.DONE and not self.completed_at:
+            from django.utils import timezone
+            self.completed_at = timezone.now()
+
+        elif self.status != self.TaskStatusChoices.DONE:
+            self.completed_at = None
+            
+        super().save(*args, **kwargs)
