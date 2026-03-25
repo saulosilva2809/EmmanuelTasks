@@ -29,6 +29,7 @@ class SprintModel(BaseModel, SoftDeleteModel):
         choices=SprintStatusChoices.choices,
         default=SprintStatusChoices.PLANNING
     )
+    progress = models.FloatField(null=True, blank=True, editable=False)
 
     class Meta:
         ordering = ['-start_date']
@@ -37,3 +38,14 @@ class SprintModel(BaseModel, SoftDeleteModel):
 
     def __str__(self):
         return f'{self.name} ({self.project.name})'
+    
+    def _set_progess(self):
+        total_tasks = self.tasks.count()
+        tasks_completed = self.tasks.filter(completed_at__isnull=False).count()
+
+        progress = (total_tasks / tasks_completed) * 100
+        self.progress = progress
+
+    def save(self, *args, **kwargs):
+        self._set_progess()
+        return super().save(*args, **kwargs)
