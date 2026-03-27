@@ -5,6 +5,7 @@ from apps.base.models import BaseModel, SoftDeleteModel
 
 class TeamMemberModel(BaseModel, SoftDeleteModel):
     class RoleChoices(models.TextChoices):
+        OWNER = 'OWNER', 'Dono do Projeto'
         MANAGER = 'MANAGER', 'Gerente de Time'
         MEMBER = 'MEMBER', 'Desenvolvedor'
         GUEST = 'GUEST', 'Convidado'
