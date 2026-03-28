@@ -74,7 +74,7 @@ class AddTeamInProjectView(generics.CreateAPIView):
 
         response_serializer = ListProjectSerializer(updated_project)
 
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
 
 
 class RemoveTeamFromProjectView(generics.DestroyAPIView):
