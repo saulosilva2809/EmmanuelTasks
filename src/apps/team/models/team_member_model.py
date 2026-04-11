@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.base.models import BaseModel, SoftDeleteModel
+from apps.base.models import BaseModel
 
 
-class TeamMemberModel(BaseModel, SoftDeleteModel):
+class TeamMemberModel(BaseModel):
     class RoleChoices(models.TextChoices):
         OWNER = 'OWNER', 'Dono do Projeto'
         MANAGER = 'MANAGER', 'Gerente de Time'
@@ -18,7 +18,9 @@ class TeamMemberModel(BaseModel, SoftDeleteModel):
     team = models.ForeignKey(
         'team.TeamModel', 
         on_delete=models.CASCADE,
-        related_name='team_members'
+        related_name='team_members',
+        null=True,
+        blank=True,
     )
     project = models.ForeignKey(
         'project.ProjectModel',
@@ -30,6 +32,7 @@ class TeamMemberModel(BaseModel, SoftDeleteModel):
         choices=RoleChoices.choices, 
         default=RoleChoices.MEMBER
     )
+    permission_related_project = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-created_at'] 
@@ -39,4 +42,12 @@ class TeamMemberModel(BaseModel, SoftDeleteModel):
         unique_together = ('user', 'team')
 
     def __str__(self):
-        return f'{self.user.email} - {self.team.name} ({self.role})'
+        return f'{self.user.email} - {self.team.name if self.team else None} ({self.role})'
+    
+    def _set_permission_related_project(self):
+        if not self.team:
+            self.permission_related_project = True
+    
+    def save(self, *args, **kwargs):
+        self._set_permission_related_project()
+        return super().save(*args, **kwargs)

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 
-class AddTeamInProjectSerializer(serializers.Serializer):
+class AddRemoveTeamInProjectSerializer(serializers.Serializer):
     teams = serializers.ListField(
         child=serializers.UUIDField(),
         required=True,

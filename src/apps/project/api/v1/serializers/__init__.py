@@ -1,4 +1,4 @@
-from .add_team_in_project_serializer import AddTeamInProjectSerializer
+from .add_remove_team_in_project_serializer import AddRemoveTeamInProjectSerializer
 from .change_project_owner_serializer import ChangeProjectOwnerSerializer
 from .create_project_serializer import CreateProjectSerializer
 from .list_project_serializer import ListProjectSerializer

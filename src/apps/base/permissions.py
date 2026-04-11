@@ -24,4 +24,5 @@ class IsManagerOrOwner(permissions.BasePermission):
         elif isinstance(obj, SprintModel):
             return obj.project.owner == request.user
 
+        print('OBJ não é nenhuma instância')
         return False

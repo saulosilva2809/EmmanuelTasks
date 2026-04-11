@@ -3,6 +3,7 @@ from rest_framework.validators import ValidationError
 
 from apps.authentication.models import UserModel
 from apps.team.models import TeamModel, TeamMemberModel
+from apps.team.services import TeamMemberService
 
 
 class TeamService:
@@ -25,6 +26,21 @@ class TeamService:
             team=team
         ).exists():
             raise ValidationError('O usuário não pode ser manager pois não está na equipe')
+        
+        # busca e deleta antiga permissão
+        old_permission = TeamMemberModel.objects.get(
+            user=team.manager,
+            team=team
+        )
+        old_permission.delete()
+
+        # cria nova permissão para o novo manager
+        TeamMemberService.create_manager_team(data={
+            'user': new_manager,
+            'team': team,
+            'project': old_permission.project,
+            'role': TeamMemberModel.RoleChoices.MANAGER
+        })
 
         team.manager = new_manager
         team.save()

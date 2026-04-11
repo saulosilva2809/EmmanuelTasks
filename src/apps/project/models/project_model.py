@@ -25,7 +25,7 @@ class ProjectModel(BaseModel, SoftDeleteModel):
     )
     start_date = models.DateField()
     term = models.DateField()
-    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=False, blank=True)
     teams = models.ManyToManyField(
         'team.TeamModel',
         related_name='projects',
@@ -36,6 +36,15 @@ class ProjectModel(BaseModel, SoftDeleteModel):
         ordering = ['-created_at'] 
         verbose_name = 'Project'
         verbose_name_plural = 'Projects'
+
+        # regra para garantir o slug único se o Project não estiver deleteado (SOFT DELETE)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['slug'], 
+                condition=models.Q(deleted_at__isnull=True),
+                name='unique_slug_active_project'
+            )
+        ]
 
     def __str__(self):
         return self.name

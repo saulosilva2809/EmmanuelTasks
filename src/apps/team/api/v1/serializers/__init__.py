@@ -4,4 +4,5 @@ from .team.list_team_serializer import ListTeamSerializer
 from .team.update_team_serializer import UpdateTeamSerializer
 
 from .team_member.create_team_member_serializer import CreateTeamMemberSerializer
+from .team_member.delete_team_member_serializer import DeleteTeamMemberSerializer
 from .team_member.list_team_member_serializer import ListTeamMemberSerializer

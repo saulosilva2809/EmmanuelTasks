@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 
 from apps.project.api.v1.serializers import (
-    AddTeamInProjectSerializer,
+    AddRemoveTeamInProjectSerializer,
     ChangeProjectOwnerSerializer,
     CreateProjectSerializer,
     ListProjectSerializer,
@@ -57,47 +57,51 @@ class RetrieveUpdateDestroyProjectView(generics.RetrieveUpdateDestroyAPIView):
 
 class AddTeamInProjectView(generics.CreateAPIView):
     permission_classes = [IsManagerOrOwner]
-    serializer_class = AddTeamInProjectSerializer
+    serializer_class = AddRemoveTeamInProjectSerializer
 
     def get_queryset(self):
         return TeamSelector.get_all_by_user(self.request.user)
     
     def create(self, request, *args, **kwargs):
+        project = ProjectSelector.get_by_id(self.kwargs.get('pk'))
+        self.check_object_permissions(request, project)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        project_id = self.kwargs.get('pk')
         updated_project = ProjectService.add_team_in_project(
             serializer.validated_data,
-            project_id
+            project.id
         )
 
         response_serializer = ListProjectSerializer(updated_project)
-
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
 
 class RemoveTeamFromProjectView(generics.DestroyAPIView):
     permission_classes = [IsManagerOrOwner]
+    serializer_class = AddRemoveTeamInProjectSerializer
 
     def get_queryset(self):
         return TeamSelector.get_all_by_user(self.request.user)
 
     def destroy(self, request, *args, **kwargs):
-        team_id = self.kwargs.get('team_id')
-        project_id = self.kwargs.get('project_id')
+        project = ProjectSelector.get_by_id(self.kwargs.get('pk'))
+        self.check_object_permissions(request, project)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         updated_project = ProjectService.remove_team_from_project(
-            team_id,
-            project_id
+            serializer.validated_data,
+            project.id
         )
 
         response_serializer = ListProjectSerializer(updated_project)
-
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
 
 class ChangeProjectOwnerView(generics.UpdateAPIView):
-    lookup_url_kwarg = 'project_id'
     permission_classes = [IsManagerOrOwner]
     serializer_class = ChangeProjectOwnerSerializer
     
@@ -105,13 +109,15 @@ class ChangeProjectOwnerView(generics.UpdateAPIView):
         return ProjectSelector.get_all_by_user(self.request.user)
 
     def update(self, request, *args, **kwargs):
+        project = ProjectSelector.get_by_id(self.kwargs.get('pk'))
+        self.check_object_permissions(request, project)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
-        project = self.get_object()
+
         updated_project = ProjectService.change_owner_project(
             serializer.validated_data,
-            project
+            project.id
         )
 
         respose_serializer = ListProjectSerializer(updated_project)

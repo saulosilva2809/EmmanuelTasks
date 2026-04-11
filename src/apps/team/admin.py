@@ -15,5 +15,5 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(TeamMemberModel)
 class TeamMemberAdmin(admin.ModelAdmin):
-    list_display = ['user', 'team', 'project', 'role', 'created_at']
+    list_display = ['user', 'team', 'project', 'role', 'permission_related_project', 'created_at']
     list_filter = ['role', 'team', 'project']

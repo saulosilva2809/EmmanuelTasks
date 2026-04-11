@@ -22,5 +22,5 @@ urlpatterns = [
 
     # teammember
     path('<uuid:team_id>/members/', view=ListCreateTeamMemberView.as_view(), name='list_create_team_member_view'),
-    path('<uuid:team_id>/members/<uuid:member_id>/', view=RemoveTeamMemberView.as_view(), name='remove_team_member_view'),
+    path('<uuid:team_id>/members/delete/', view=RemoveTeamMemberView.as_view(), name='remove_team_member_view'),
 ]
