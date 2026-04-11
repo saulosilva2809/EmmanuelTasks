@@ -8,9 +8,10 @@ from apps.team.api.v1.serializers import (
 )
 from apps.base.pagination import PaginationAPI
 from apps.base.permissions import IsManagerOrOwner
-from apps.team.models import TeamModel, TeamMemberModel
+from apps.team.models import TeamModel
 from apps.team.selectors import TeamMemberSelector
 from apps.team.services import TeamMemberService
+
 
 class ListCreateTeamMemberView(generics.ListCreateAPIView):
     permission_classes = [IsManagerOrOwner]
@@ -24,6 +25,12 @@ class ListCreateTeamMemberView(generics.ListCreateAPIView):
         if self.request.method == 'POST':
             return CreateTeamMemberSerializer
         return ListTeamMemberSerializer
+    
+    def list(self, request, *args, **kwargs):
+        team = get_object_or_404(TeamModel, id=self.kwargs.get('team_id'))
+        self.check_object_permissions(self.request, team)
+
+        return super().list(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         team_id = self.kwargs.get('team_id')

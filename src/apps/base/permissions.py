@@ -2,7 +2,7 @@ from rest_framework import permissions
 
 from apps.project.models import ProjectModel
 from apps.sprint.models import SprintModel
-from apps.team.models import TeamModel
+from apps.team.models import TeamModel, TeamMemberModel
 
 
 class IsManagerOrOwner(permissions.BasePermission):
@@ -18,7 +18,7 @@ class IsManagerOrOwner(permissions.BasePermission):
             if obj.manager == request.user or ProjectModel.objects.filter(
                 teams=obj,
                 owner=request.user
-            ).exists():
+            ).exists() or obj.team_members.filter(user=request.user):
                 return True
             
         elif isinstance(obj, SprintModel):
