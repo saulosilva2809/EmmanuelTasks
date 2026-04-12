@@ -8,7 +8,7 @@ class TeamSelector:
     @staticmethod
     def get_all_by_user(user: UserModel) -> QuerySet[TeamModel]:
         return TeamModel.objects.filter(
-            Q(manager=user) | Q(team_members__user=user)
+            Q(manager=user) | Q(team_members__user=user) | Q(projects__owner=user)
         ).select_related(
             'manager'
         ).prefetch_related(
