@@ -11,8 +11,15 @@ class IsManagerOrOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if isinstance(obj, ProjectModel):
-            if obj.owner == request.user:
+            is_boos = (
+                obj.owner == request.user or 
+                obj.teams.filter(manager=request.user).exists()
+            )
+            if is_boos:
                 return True
+            
+            if request.method in permissions.SAFE_METHODS:
+                return obj.teams.filter(team_members__user=request.user).exists()
 
         elif isinstance(obj, TeamModel):
             # se é manager do time ou owner do projeto

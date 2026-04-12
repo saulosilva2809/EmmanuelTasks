@@ -37,6 +37,8 @@ class ListCreateProjectView(generics.ListCreateAPIView):
 
 
 class RetrieveUpdateDestroyProjectView(generics.RetrieveUpdateDestroyAPIView):
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
     permission_classes = [IsManagerOrOwner]
     pagination_class = PaginationAPI
 
@@ -56,6 +58,8 @@ class RetrieveUpdateDestroyProjectView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class AddTeamInProjectView(generics.CreateAPIView):
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
     permission_classes = [IsManagerOrOwner]
     serializer_class = AddRemoveTeamInProjectSerializer
 
@@ -63,7 +67,7 @@ class AddTeamInProjectView(generics.CreateAPIView):
         return TeamSelector.get_all_by_user(self.request.user)
     
     def create(self, request, *args, **kwargs):
-        project = ProjectSelector.get_by_id(self.kwargs.get('pk'))
+        project = ProjectSelector.get_by_slug(self.kwargs.get('slug'))
         self.check_object_permissions(request, project)
 
         serializer = self.get_serializer(data=request.data)
@@ -79,6 +83,8 @@ class AddTeamInProjectView(generics.CreateAPIView):
 
 
 class RemoveTeamFromProjectView(generics.DestroyAPIView):
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
     permission_classes = [IsManagerOrOwner]
     serializer_class = AddRemoveTeamInProjectSerializer
 
@@ -86,7 +92,7 @@ class RemoveTeamFromProjectView(generics.DestroyAPIView):
         return TeamSelector.get_all_by_user(self.request.user)
 
     def destroy(self, request, *args, **kwargs):
-        project = ProjectSelector.get_by_id(self.kwargs.get('pk'))
+        project = ProjectSelector.get_by_slug(self.kwargs.get('slug'))
         self.check_object_permissions(request, project)
 
         serializer = self.get_serializer(data=request.data)
@@ -102,14 +108,25 @@ class RemoveTeamFromProjectView(generics.DestroyAPIView):
 
 
 class ChangeProjectOwnerView(generics.UpdateAPIView):
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
     permission_classes = [IsManagerOrOwner]
     serializer_class = ChangeProjectOwnerSerializer
     
     def get_queryset(self):
         return ProjectSelector.get_all_by_user(self.request.user)
+    
+    def check_object_permissions(self, request, obj):
+        super().check_object_permissions(request, obj)
+        
+        if self.request.method in ['PUT', 'PATCH'] and obj.owner != self.request.user:
+            self.permission_denied(
+                self.request,
+                'Você não tem permissão para executar essa ação.'
+            )
 
     def update(self, request, *args, **kwargs):
-        project = ProjectSelector.get_by_id(self.kwargs.get('pk'))
+        project = ProjectSelector.get_by_slug(self.kwargs.get('slug'))
         self.check_object_permissions(request, project)
 
         serializer = self.get_serializer(data=request.data)

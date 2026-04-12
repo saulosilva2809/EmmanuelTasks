@@ -29,3 +29,13 @@ class ProjectSelector:
         )
 
         return get_object_or_404(base_filter, id=id)
+    
+    @staticmethod
+    def get_by_slug(slug: str) -> ProjectModel:
+        base_filter = ProjectModel.objects.select_related(
+            'owner'
+        ).prefetch_related(
+            'teams'
+        )
+
+        return get_object_or_404(base_filter, slug=slug)
