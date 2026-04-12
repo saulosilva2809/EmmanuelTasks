@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.validators import ValidationError
-from uuid import UUID
 
 from apps.project.models import ProjectModel
 from apps.team.models import TeamMemberModel, TeamModel

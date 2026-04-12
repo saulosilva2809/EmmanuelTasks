@@ -31,9 +31,18 @@ class ListCreateTeamMemberView(generics.ListCreateAPIView):
         self.check_object_permissions(self.request, team)
 
         return super().list(request, *args, **kwargs)
+    
+    def create(self, request, *args, **kwargs):
+        team = get_object_or_404(TeamModel, id=self.kwargs.get('team_id'))
+        self.check_object_permissions(self.request, team)
+
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
-        team_id = self.kwargs.get('team_id')
+        team = get_object_or_404(TeamModel, id=self.kwargs.get('team_id'))
+        self.check_object_permissions(self.request, team)
+
+        team_id = team.id
         serializer.validated_data['team_id'] = team_id
         instance = TeamMemberService.create_team_member(serializer.validated_data)
 

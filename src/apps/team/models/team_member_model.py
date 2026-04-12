@@ -38,8 +38,6 @@ class TeamMemberModel(BaseModel):
         ordering = ['-created_at'] 
         verbose_name = 'Team Member'
         verbose_name_plural = 'Teams Members'
-        # Garante que um usuário não entre no mesmo time duas vezes
-        unique_together = ('user', 'team')
 
     def __str__(self):
         return f'{self.user.email} - {self.team.name if self.team else None} ({self.role})'
