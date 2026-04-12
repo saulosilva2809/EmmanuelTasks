@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework.validators import ValidationError
 
 from apps.task.models import TaskModel
@@ -5,6 +6,7 @@ from apps.task.models import TaskModel
 
 class TaskService:
     @staticmethod
+    @transaction.atomic()
     def create_task(validated_data: dict):
         TaskService._validate_task_data(validated_data)
 
@@ -37,6 +39,7 @@ class TaskService:
                 raise ValidationError('Esse usuário não pode ser responsável por essa task pro não pertence ao projeto.')
     
     @staticmethod
+    @transaction.atomic()
     def update_task(data: dict, instance: TaskModel):
         TaskService._validate_task_data(data, instance)
 

@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.utils.text import slugify
 from django.shortcuts import get_object_or_404
 from uuid import UUID, uuid4
@@ -11,6 +12,7 @@ from apps.team.services import TeamMemberService
 
 class ProjectService:
     @staticmethod
+    @transaction.atomic()
     def create_project(validated_data: dict, creator: UserModel):
         validated_data['owner'] = creator
         validated_data['slug'] = ProjectService._set_slug(validated_data['name'])
@@ -48,6 +50,7 @@ class ProjectService:
         return unique_slug
 
     @staticmethod
+    @transaction.atomic()
     def update_project(validated_data: dict, instance: ProjectModel):
         old_name = validated_data.get('name')
 
@@ -62,6 +65,7 @@ class ProjectService:
         return instance
     
     @staticmethod
+    @transaction.atomic()
     def add_team_in_project(validated_data: dict, project_id: UUID):
         teams = []
         ids_list = validated_data.get('teams')
@@ -90,6 +94,7 @@ class ProjectService:
         return project
 
     @staticmethod
+    @transaction.atomic()
     def remove_team_from_project(validated_data: dict, project_id: UUID):
         project = ProjectSelector.get_by_id(project_id)
         team_ids = validated_data.get('teams')
@@ -102,6 +107,7 @@ class ProjectService:
         return project
     
     @staticmethod
+    @transaction.atomic()
     def change_owner_project(validated_data: dict, project_id: UUID):
         new_owner_id = validated_data.get('new_owner')
         new_owner = get_object_or_404(UserModel, id=new_owner_id)

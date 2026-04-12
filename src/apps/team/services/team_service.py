@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.validators import ValidationError
 
@@ -8,6 +9,7 @@ from apps.team.services import TeamMemberService
 
 class TeamService:
     @staticmethod
+    @transaction.atomic()
     def create_team(validated_data: dict, creator: UserModel) -> TeamModel:
         if not validated_data.get('manager'):
             validated_data['manager'] = creator
@@ -17,6 +19,7 @@ class TeamService:
         return team
     
     @staticmethod
+    @transaction.atomic()
     def change_team_manager(validated_data: dict, team: TeamModel) -> TeamModel:
         new_manager_id = validated_data.get('new_manager_id')
         new_manager = get_object_or_404(UserModel, id=new_manager_id)

@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework.validators import ValidationError
 
 from apps.sprint.models import SprintModel
@@ -6,6 +7,7 @@ from apps.team.models import TeamModel
 
 class SprintService:
     @staticmethod
+    @transaction.atomic()
     def create_sprint(validated_data: dict) -> SprintModel:
         SprintService._validate_project_and_teams(validated_data)
         SprintService._validate_sprint_data(validated_data)
@@ -62,6 +64,7 @@ class SprintService:
                     raise ValidationError('A sprint não pode terminar depois do prazo do projeto.')
     
     @staticmethod
+    @transaction.atomic()
     def update_sprint(data: dict, instance: SprintModel) -> SprintModel:
         SprintService._validate_sprint_data(data, instance)
 
@@ -72,6 +75,7 @@ class SprintService:
         return instance
     
     @staticmethod
+    @transaction.atomic()
     def add_team_in_sprint(instance: SprintModel, data: dict) -> SprintModel:
         teams_id = data.get('teams')
         teams = TeamModel.objects.filter(
@@ -87,6 +91,7 @@ class SprintService:
         return instance
     
     @staticmethod
+    @transaction.atomic()
     def remove_team_from_sprint(instance: SprintModel, data: dict) -> SprintModel:
         teams_id = data.get('teams')
         SprintService._validate_remove_teams(instance, teams_id)
