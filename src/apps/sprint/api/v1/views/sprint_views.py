@@ -28,8 +28,8 @@ class ListCreateSprintView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-            
-        instance = SprintService.create_sprint(serializer.validated_data)
+        
+        instance = SprintService.create_sprint(self.request.user, serializer.validated_data)
         response_serializer = ListSprintSerializer(instance)
             
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)

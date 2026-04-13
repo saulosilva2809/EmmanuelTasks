@@ -1,6 +1,7 @@
 from django.db import transaction
 from rest_framework.validators import ValidationError
 
+from apps.authentication.models import UserModel
 from apps.sprint.models import SprintModel
 from apps.team.models import TeamModel
 
@@ -8,11 +9,13 @@ from apps.team.models import TeamModel
 class SprintService:
     @staticmethod
     @transaction.atomic()
-    def create_sprint(validated_data: dict) -> SprintModel:
+    def create_sprint(user: UserModel, validated_data: dict) -> SprintModel:
+        validated_data['user'] = user
         SprintService._validate_project_and_teams(validated_data)
         SprintService._validate_sprint_data(validated_data)
 
         teams = validated_data.pop('teams', None)
+        validated_data.pop('user')
         sprint = SprintModel.objects.create(**validated_data)
 
         if teams:
@@ -22,6 +25,7 @@ class SprintService:
     
     @staticmethod
     def _validate_project_and_teams(data: dict, instance: SprintModel = None):
+        user = data.get('user')
         project = data.get('project') or (instance.project if instance else None)
         status = data.get('status') or (instance.status if instance else SprintModel.SprintStatusChoices.PLANNING)
         teams_id = data.get('teams') or (list(instance.teams.all()) if instance else None)
@@ -30,10 +34,11 @@ class SprintService:
         if project and teams:
             valid_teams = project.teams.filter(pk__in=[team.pk for team in teams])
             if valid_teams.count() != len(teams):
-                raise ValidationError(f'Uma ou mais equipes não percentem a este projeto.')
+                raise ValidationError('Uma ou mais equipes não percentem a este projeto.')
             
-        # TODO: criar validação:
-            # o user só poderá criar sprints para o time que ele é manager
+            teams_that_not_owners = teams.exclude(manager=user)
+            if teams_that_not_owners:
+                raise ValidationError('Você precisa ser gerente de todas as equipes enviadas para criar uma sprint.')
 
         if status == SprintModel.SprintStatusChoices.ACTIVE:
             active_qs = SprintModel.objects.filter(
