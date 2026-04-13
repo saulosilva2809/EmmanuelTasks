@@ -4,6 +4,12 @@ from apps.sprint.models import SprintModel
 
 
 class CreateSprintSerializer(serializers.ModelSerializer):
+    teams = serializers.ListField(
+        child=serializers.UUIDField(),
+        required=True,
+        allow_empty=False,
+    )
+
     class Meta:
         model = SprintModel
         fields = [

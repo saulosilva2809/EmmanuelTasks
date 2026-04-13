@@ -43,6 +43,10 @@ class SprintModel(BaseModel, SoftDeleteModel):
         total_tasks = self.tasks.count()
         tasks_completed = self.tasks.filter(completed_at__isnull=False).count()
 
+        if not tasks_completed:
+            progress = 0
+            return
+
         progress = (total_tasks / tasks_completed) * 100
         self.progress = progress
 

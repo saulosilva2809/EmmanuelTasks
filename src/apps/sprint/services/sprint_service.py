@@ -23,13 +23,17 @@ class SprintService:
     @staticmethod
     def _validate_project_and_teams(data: dict, instance: SprintModel = None):
         project = data.get('project') or (instance.project if instance else None)
-        teams = data.get('teams') or (list(instance.teams.all()) if instance else None)
         status = data.get('status') or (instance.status if instance else SprintModel.SprintStatusChoices.PLANNING)
-
+        teams_id = data.get('teams') or (list(instance.teams.all()) if instance else None)
+        teams = TeamModel.objects.filter(id__in=teams_id)
+    
         if project and teams:
             valid_teams = project.teams.filter(pk__in=[team.pk for team in teams])
             if valid_teams.count() != len(teams):
                 raise ValidationError(f'Uma ou mais equipes não percentem a este projeto.')
+            
+        # TODO: criar validação:
+            # o user só poderá criar sprints para o time que ele é manager
 
         if status == SprintModel.SprintStatusChoices.ACTIVE:
             active_qs = SprintModel.objects.filter(
@@ -37,7 +41,7 @@ class SprintService:
                 status=SprintModel.SprintStatusChoices.ACTIVE
             )
             # se for update ignoramos a própria sprint na busca
-            if instance:
+            if instance and active_qs:
                 active_qs = active_qs.exclude(pk=instance.pk)
             
             if active_qs.exists():
