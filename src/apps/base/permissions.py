@@ -23,11 +23,13 @@ class IsManagerOrOwner(permissions.BasePermission):
                 return obj.teams.filter(team_members__user=request.user).exists()
 
         elif isinstance(obj, TeamModel):
+            print(f'INSTÂNCIA DETACTADA: {obj}')
             # se é manager do time ou owner do projeto
             is_boos = (
                 obj.manager == request.user or 
                 ProjectModel.objects.filter(teams=obj, owner=request.user).exists()
             )
+            print(f'IS BOOS: {is_boos}')
             if is_boos:
                 return True
 
@@ -61,4 +63,5 @@ class IsManagerOrOwner(permissions.BasePermission):
             if request.method in permissions.SAFE_METHODS:
                 return obj.team.team_members.filter(user=request.user).exists()
 
+        print('NENHUMA INSTÂNCIA PASSADA')
         return False

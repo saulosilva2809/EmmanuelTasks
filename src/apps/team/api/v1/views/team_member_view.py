@@ -3,7 +3,6 @@ from rest_framework import generics, response, status
 
 from apps.team.api.v1.serializers import (
     CreateTeamMemberSerializer,
-    DeleteTeamMemberSerializer,
     ListTeamMemberSerializer,
 )
 from apps.base.pagination import PaginationAPI
@@ -51,7 +50,6 @@ class ListCreateTeamMemberView(generics.ListCreateAPIView):
 
 class RemoveTeamMemberView(generics.DestroyAPIView):
     permission_classes = [IsManagerOrOwner]
-    serializer_class = DeleteTeamMemberSerializer
     
     def get_queryset(self):
         team = get_object_or_404(TeamModel, id=self.kwargs.get('team_id'))
@@ -61,10 +59,6 @@ class RemoveTeamMemberView(generics.DestroyAPIView):
         team = get_object_or_404(TeamModel, id=self.kwargs.get('team_id'))
         self.check_object_permissions(self.request, team)
 
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        serializer.validated_data['team_id'] = team.id
-        TeamMemberService.delete_team_member(serializer.validated_data)
+        TeamMemberService.delete_team_member(self.kwargs.get('pk'))
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)

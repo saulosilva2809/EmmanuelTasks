@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.validators import ValidationError
+from uuid import UUID
 
 from apps.project.models import ProjectModel
 from apps.team.models import TeamMemberModel, TeamModel
@@ -38,22 +39,10 @@ class TeamMemberService:
                 user=data['user']
             ).exists()
             if existing_model:
-                raise ValidationError('O usuário selecionado já está no time e projeto.')  
-            
-    @staticmethod
-    @transaction.atomic()
-    def delete_team_member(validated_data: dict):
-        team_id = validated_data.get('team_id')
-        user = validated_data.get('user')
-        project = validated_data.get('project')
+                raise ValidationError('O usuário selecionado já está no time e projeto.')
 
-        object = TeamMemberModel.objects.filter(
-            team__id=team_id,
-            user__id=user.id,
-            project__id=project.id
-        )
-
-        object.delete()
+    def delete_team_member(id: UUID):
+        get_object_or_404(TeamMemberModel, id=id).delete() 
     
     # AVISO: essas functions foram criadas para uso externo dessa APP
     @staticmethod
