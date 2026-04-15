@@ -2,6 +2,7 @@ from rest_framework import permissions
 
 from apps.project.models import ProjectModel
 from apps.sprint.models import SprintModel
+from apps.task.models import TaskModel
 from apps.team.models import TeamModel
 
 
@@ -39,11 +40,25 @@ class IsManagerOrOwner(permissions.BasePermission):
                 obj.project.owner == request.user or
                 obj.teams.filter(manager=request.user).exists()
             )
-
             if is_boos:
                 return True
             
             if request.method in permissions.SAFE_METHODS:
                 return obj.teams.filter(team_members__user=request.user).exists()
+            
+        if isinstance(obj, TaskModel):
+            is_boos = (
+                obj.project.owner == request.user or
+                obj.team.manager == request.user
+            )
+            if request.method in ['DELETE'] and is_boos:
+                return True
+
+            is_responsible = obj.responsible == request.user
+            if request.method in ['PATCH', 'PUT'] and is_responsible:
+                return True
+            
+            if request.method in permissions.SAFE_METHODS:
+                return obj.team.team_members.filter(user=request.user).exists()
 
         return False

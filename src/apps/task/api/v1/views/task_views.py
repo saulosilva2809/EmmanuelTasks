@@ -23,6 +23,7 @@ class ListCreateTaskView(generics.ListCreateAPIView):
         return ListTaskSerializer
 
     def perform_create(self, serializer):
+        serializer.validated_data['user'] = self.request.user
         instance = TaskService.create_task(serializer.validated_data)
         serializer.instance = instance
 

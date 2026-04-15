@@ -10,6 +10,8 @@ class TeamMemberService:
     @staticmethod
     @transaction.atomic()
     def create_team_member(validated_data: dict) -> TeamMemberModel:
+        TeamMemberService._validate_team_member_data(validated_data)
+
         user = validated_data.get('user')
         team = validated_data.get('team')
         
@@ -29,6 +31,14 @@ class TeamMemberService:
         if project and team:
             if not project.teams.filter(pk=team.pk).exists():
                 raise ValidationError('Esta equipe não percente a este projeto.')
+            
+            existing_model = TeamMemberModel.objects.filter(
+                project=project,
+                team=team,
+                user=data['user']
+            ).exists()
+            if existing_model:
+                raise ValidationError('O usuário selecionado já está no time e projeto.')  
             
     @staticmethod
     @transaction.atomic()

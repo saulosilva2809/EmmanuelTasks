@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.utils import timezone
 from rest_framework.validators import ValidationError
 
 from apps.task.models import TaskModel
@@ -9,20 +10,29 @@ class TaskService:
     @transaction.atomic()
     def create_task(validated_data: dict):
         TaskService._validate_task_data(validated_data)
+        validated_data.pop('user')
 
         return TaskModel.objects.create(**validated_data)
 
     @staticmethod
     def _validate_task_data(data: dict, instance: TaskModel = None):
+        user = data.get('user')
         project = data.get('project') or (instance.project if instance else None)
         team = data.get('team') or (instance.team if instance else None)
         sprint = data.get('sprint') or (instance.sprint if instance else None)
         responsible = data.get('responsible') or (instance.responsible if instance else None)
         status = data.get('status') or (instance.status if instance else None)
+        due_date = data.get('due_date') or (instance.due_date if instance else None)
+
+        if due_date < timezone.now().date():
+            raise ValidationError('A data de validade não pode ser menor que a data atual.')
 
         if project and team:
             if not project.teams.filter(pk=team.pk).exists():
                 raise ValidationError('Esta equipe não percente a este projeto.')
+            
+            if not instance and team.manager != user:
+                raise ValidationError('Você não pode associar um time que não é o gerente.')
 
         if sprint:
             if project and sprint.project != project:
