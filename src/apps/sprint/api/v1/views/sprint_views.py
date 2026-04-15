@@ -62,6 +62,7 @@ class AddTeamInSprintView(generics.CreateAPIView):
         return SprintSelector.get_all_by_user(self.request.user)
     
     def create(self, request, *args, **kwargs):
+        self.check_object_permissions(self.request, self.get_object())
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -82,6 +83,7 @@ class RemoveTeamFromSprintView(generics.DestroyAPIView):
         return SprintSelector.get_all_by_user(self.request.user)
     
     def destroy(self, request, *args, **kwargs):
+        self.check_object_permissions(self.request, self.get_object())
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 

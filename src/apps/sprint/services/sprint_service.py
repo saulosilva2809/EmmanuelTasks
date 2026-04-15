@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 from rest_framework.validators import ValidationError
 
 from apps.authentication.models import UserModel
@@ -35,10 +36,6 @@ class SprintService:
             valid_teams = project.teams.filter(pk__in=[team.pk for team in teams])
             if valid_teams.count() != len(teams):
                 raise ValidationError('Uma ou mais equipes não percentem a este projeto.')
-            
-            teams_that_not_owners = teams.exclude(manager=user)
-            if teams_that_not_owners:
-                raise ValidationError('Você precisa ser gerente de todas as equipes enviadas para criar uma sprint.')
 
         if status == SprintModel.SprintStatusChoices.ACTIVE:
             active_qs = SprintModel.objects.filter(
