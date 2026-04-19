@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     # apps
     'apps.authentication',
     'apps.base',
+    'apps.invitation',
     'apps.project',
     'apps.sprint',
     'apps.task',
