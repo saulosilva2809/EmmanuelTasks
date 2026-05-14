@@ -8,12 +8,6 @@ from apps.base.models import BaseModel
 
 
 class InvitationModel(BaseModel):
-    class RoleChoices(models.TextChoices):
-        OWNER = 'OWNER', 'Dono do Projeto'
-        MANAGER = 'MANAGER', 'Gerente de Time'
-        MEMBER = 'MEMBER', 'Desenvolvedor'
-        GUEST = 'GUEST', 'Convidado'
-
     class StatusChoices(models.TextChoices):
         PENDING = 'PENDING', 'Pendente'
         ACCEPTED = 'ACCEPTED', 'Aceito'
@@ -28,11 +22,7 @@ class InvitationModel(BaseModel):
         on_delete=models.CASCADE
     )
     # quem recebeu o convite
-    made_for = models.ForeignKey(
-        'authentication.UserModel',
-        related_name='received_invitations',
-        on_delete=models.CASCADE
-    )
+    made_for = models.EmailField()
     project = models.ForeignKey(
         'project.ProjectModel',
         on_delete=models.CASCADE
@@ -41,11 +31,6 @@ class InvitationModel(BaseModel):
         'team.TeamModel',
         on_delete=models.CASCADE
     )
-    role = models.CharField(
-        max_length=20, 
-        choices=RoleChoices.choices, 
-        default=RoleChoices.MEMBER
-    )
     link = models.CharField(
         null=True,
         blank=True,
@@ -53,8 +38,9 @@ class InvitationModel(BaseModel):
         unique=True
     )
     expiration_date = models.DateField(
-        default=(timezone.now() + timedelta(days=1)),
-        editable=False
+        editable=False, 
+        null=True,
+        blank=True
     )
     status = models.CharField(
         max_length=20,
@@ -76,4 +62,7 @@ class InvitationModel(BaseModel):
         if not self.link:
             self.link = self._generate_link()
 
+        if not self.expiration_date:
+            self.expiration_date = timezone.now().date() + timedelta(days=1)
+    
         return super().save(*args, **kwargs)
