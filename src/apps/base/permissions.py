@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+from apps.invitation.models import InvitationModel
 from apps.project.models import ProjectModel
 from apps.sprint.models import SprintModel
 from apps.task.models import TaskModel
@@ -23,7 +24,6 @@ class IsManagerOrOwner(permissions.BasePermission):
                 return obj.teams.filter(team_members__user=request.user).exists()
 
         elif isinstance(obj, TeamModel):
-            print(f'INSTÂNCIA DETACTADA: {obj}')
             # se é manager do time ou owner do projeto
             is_boos = (
                 obj.manager == request.user or 
@@ -62,6 +62,14 @@ class IsManagerOrOwner(permissions.BasePermission):
             
             if request.method in permissions.SAFE_METHODS:
                 return obj.team.team_members.filter(user=request.user).exists()
+            
+        if isinstance(obj, InvitationModel):
+            is_boos = (
+                obj.made_by.email == request.user.email or
+                obj.made_for == request.user.email
+            )
+            
+            return is_boos
 
         print('NENHUMA INSTÂNCIA PASSADA')
         return False
