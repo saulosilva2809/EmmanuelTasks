@@ -5,5 +5,5 @@ from .models import InvitationModel
 
 @admin.register(InvitationModel)
 class InvitationModelAdmin(admin.ModelAdmin):
-    list_display = ['made_by', 'made_for', 'project', 'team', 'status']
-    list_filter = ['made_by', 'made_for', 'project', 'team', 'status']
+    list_display = ['made_by', 'made_for', 'project', 'team', 'status', 'answered']
+    list_filter = ['made_by', 'made_for', 'project', 'team', 'status', 'answered']
