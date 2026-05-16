@@ -63,3 +63,22 @@ class AcceptInvitationView(generics.GenericAPIView):
         response = ListInvitationSerializer(invitation)
     
         return Response(response.data, status=status.HTTP_200_OK)
+
+
+class DeclineInvitationView(generics.GenericAPIView):
+    lookup_field = 'link'
+    lookup_url_kwarg = 'link'
+    permission_classes = [IsManagerOrOwner]
+
+    def get_queryset(self):
+        return InvitationSelector.get_by_user(self.request.user)
+    
+    def post(self, request, *args, **kwargs):
+        self.check_object_permissions(request, self.get_object())
+        invitation = InvitationService.decline_invitation(
+            self.get_object(),
+            self.request.user
+        )
+        response = ListInvitationSerializer(invitation)
+    
+        return Response(response.data, status=status.HTTP_200_OK)

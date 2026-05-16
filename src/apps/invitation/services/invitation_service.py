@@ -33,14 +33,7 @@ class InvitationService:
     @staticmethod
     @transaction.atomic()
     def accept_invitation(invitation: InvitationModel, user: UserModel):
-        if timezone.now().date() > invitation.expiration_date:
-            raise ValidationError('O convite já foi expirado.')
-
-        if invitation.StatusChoices == InvitationModel.StatusChoices.ACCEPTED:
-            raise ValidationError('O convite já foi aceito.')
-
-        if invitation.made_for != user.email:
-            raise ValidationError('Você não pode aceitar esse convite.')
+        InvitationService._validate_invitation(invitation, user)
 
         user_data = {
             'user': user,
@@ -51,6 +44,28 @@ class InvitationService:
         TeamMemberService.create_team_member(user_data)
         
         invitation.status = InvitationModel.StatusChoices.ACCEPTED
+        invitation.answered = True
+        invitation.save()
+
+        return invitation
+    
+    @staticmethod
+    def _validate_invitation(invitation: InvitationModel, user: UserModel):
+        if timezone.now().date() > invitation.expiration_date:
+            raise ValidationError('O convite já foi expirado.')
+
+        if invitation.answered:
+            raise ValidationError('Esse convite já foi respondido.')
+
+        if invitation.made_for != user.email:
+            raise ValidationError('Você não pode acessar esse convite.')
+    
+    @staticmethod
+    @transaction.atomic()
+    def decline_invitation(invitation: InvitationModel, user: UserModel):
+        InvitationService._validate_invitation(invitation, user)
+        invitation.status = InvitationModel.StatusChoices.DECLINED
+        invitation.answered = True
         invitation.save()
 
         return invitation
