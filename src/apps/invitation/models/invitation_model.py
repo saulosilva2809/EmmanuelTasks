@@ -47,6 +47,7 @@ class InvitationModel(BaseModel):
         choices=StatusChoices.choices, 
         default=StatusChoices.PENDING
     )
+    answered = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Invitation'
