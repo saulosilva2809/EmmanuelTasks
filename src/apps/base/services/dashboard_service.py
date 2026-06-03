@@ -97,13 +97,13 @@ class DashboardService:
         return [{
                 'project_name': project.name,
                 'sprint_count': project.sprints.count()
-            } for project in self.projects],
+            } for project in self.projects]
     
     def get_sprints_per_team(self):
         return [{
                 'team_name': team.name,
                 'sprint_count': team.sprints.count()
-            } for team in self.teams],
+            } for team in self.teams]
 
     def get_tasks_per_status(self):
         count_tasks_per_status = (
