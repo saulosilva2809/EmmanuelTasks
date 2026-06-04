@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'drf_spectacular',
     'rest_framework',
+    'corsheaders',
 
     # apps
     'apps.authentication',
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
