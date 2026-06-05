@@ -109,7 +109,7 @@ class DashboardService:
         count_tasks_per_status = (
             self._get_tasks_user()
             .values('status')
-            .annotate(count=Count('id'))
+            .annotate(count=Count('id', distinct=True))
             .order_by('status')
         )
         return count_tasks_per_status
@@ -118,7 +118,7 @@ class DashboardService:
         count_tasks_per_priority = (
             self._get_tasks_user()
             .values('priority')
-            .annotate(count=Count('id'))
+            .annotate(count=Count('id', distinct=True))
             .order_by('priority')
         )
         return count_tasks_per_priority
@@ -163,7 +163,7 @@ class DashboardService:
         # porcentagem global de tasks concluídas
         global_progress_percentage = (
             total_tasks_assigned / total_completed_tasks
-        ) * 100 if total_tasks_assigned and total_completed_tasks else None
+        ) * 100 if total_tasks_assigned and total_completed_tasks else 0
 
         return {
             'global_progress_percentage': global_progress_percentage,
