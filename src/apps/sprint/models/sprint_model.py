@@ -29,7 +29,7 @@ class SprintModel(BaseModel, SoftDeleteModel):
         choices=SprintStatusChoices.choices,
         default=SprintStatusChoices.PLANNING
     )
-    progress = models.FloatField(null=True, blank=True, editable=False)
+    progress = models.FloatField(editable=False, default=0)
 
     class Meta:
         ordering = ['-start_date']
