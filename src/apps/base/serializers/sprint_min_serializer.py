@@ -15,5 +15,5 @@ class SprintMinSerializer(serializers.ModelSerializer):
         model = SprintModel
         fields = ('id', 'name', 'project', 'team', 'sprint_status')
 
-    def get_sprint_status(self, obj):
+    def get_sprint_status(self, obj) -> str:
         return obj.get_status_display()
