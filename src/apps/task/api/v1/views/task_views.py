@@ -1,4 +1,5 @@
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
 
 from apps.base.pagination import PaginationAPI
 from apps.base.permissions import IsManagerOrOwner
@@ -45,3 +46,21 @@ class RetrieveUpdateDestroyTaskView(generics.RetrieveUpdateDestroyAPIView):
             serializer.validated_data,
             serializer.instance
         )
+
+
+class SetTaskCompletedView(generics.CreateAPIView):
+    permission_classes = [IsManagerOrOwner]
+
+    def get_queryset(self):
+        return TaskSelector.get_all_by_user(self.request.user)
+    
+    def create(self, request, *args, **kwargs):
+        task_obj = self.get_object()
+
+        task = TaskService.set_task_as_completed(
+            task_obj,
+            self.request.user
+        )
+        response = ListTaskSerializer(task)
+
+        return Response(response.data, status=status.HTTP_200_OK)

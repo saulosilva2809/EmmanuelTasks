@@ -1,0 +1,44 @@
+from django.utils import timezone
+from rest_framework.validators import ValidationError
+
+from apps.authentication.models import UserModel
+from apps.task.models import TaskModel
+
+
+def validate_task_data(data: dict, instance: TaskModel = None):
+        user = data.get('user')
+        project = data.get('project') or (instance.project if instance else None)
+        team = data.get('team') or (instance.team if instance else None)
+        sprint = data.get('sprint') or (instance.sprint if instance else None)
+        responsible = data.get('responsible') or (instance.responsible if instance else None)
+        status = data.get('status') or (instance.status if instance else None)
+        due_date = data.get('due_date') or (instance.due_date if instance else None)
+
+        if due_date < timezone.now().date():
+            raise ValidationError('A data de validade não pode ser menor que a data atual.')
+
+        if project and team:
+            if not project.teams.filter(pk=team.pk).exists():
+                raise ValidationError('Esta equipe não percente a este projeto.')
+            
+            if not instance and team.manager != user:
+                raise ValidationError('Você não pode associar um time que não é o gerente.')
+
+        if sprint:
+            if project and sprint.project != project:
+                raise ValidationError('Esta sprint não percente a este projeto.')
+
+            if team and team not in sprint.teams.all():
+                raise ValidationError('Esta sprint não percente a esta equipe.')
+
+            if status == TaskModel.TaskStatusChoices.BACKLOG:
+                raise ValidationError('O status BACKLOG só pode ser usado quando a task não estiver associada a uma Sprint.')
+            
+        if responsible and team:
+            if not team.team_members.filter(user__pk=responsible.pk).exists():
+                raise ValidationError('Esse usuário não pode ser responsável por essa task pro não pertence ao projeto.')
+
+
+def validate_set_task_completed(instance: TaskModel, user: UserModel):
+    if instance.responsible != user:
+        raise ValidationError('Você não pode concluir uma tarefa que não é sua')
