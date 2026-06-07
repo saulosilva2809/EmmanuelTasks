@@ -57,7 +57,7 @@ class IsManagerOrOwner(permissions.BasePermission):
                 return True
 
             is_responsible = obj.responsible == request.user
-            if request.method in ['PATCH', 'PUT'] and is_responsible:
+            if request.method in ['PATCH', 'PUT', 'POST'] and is_responsible:
                 return True
             
             if request.method in permissions.SAFE_METHODS:

@@ -1,4 +1,5 @@
 from .task_views import (
     ListCreateTaskView,
-    RetrieveUpdateDestroyTaskView
+    RetrieveUpdateDestroyTaskView,
+    SetTaskCompletedView,
 )
