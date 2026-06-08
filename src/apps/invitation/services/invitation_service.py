@@ -16,19 +16,6 @@ class InvitationService:
         InvitationService._send_invitation_by_email(invitation)
 
         return invitation
-    
-    @staticmethod
-    @transaction.atomic()
-    def _create_invitation(data: dict):
-        return InvitationModel.objects.create(**data)
-
-    @staticmethod
-    def _send_invitation_by_email(invitation: InvitationModel):
-        send_email_task.delay(
-            subject=f'Convite para o projeto {invitation.project}',
-            message=f'http://127.0.0.1:8000/api/v1/invitation/{invitation.link}/',
-            recipient_list=[invitation.made_for]
-        )
 
     @staticmethod
     @transaction.atomic()
@@ -50,6 +37,29 @@ class InvitationService:
         return invitation
     
     @staticmethod
+    @transaction.atomic()
+    def decline_invitation(invitation: InvitationModel, user: UserModel):
+        InvitationService._validate_invitation(invitation, user)
+        invitation.status = InvitationModel.StatusChoices.DECLINED
+        invitation.answered = True
+        invitation.save()
+
+        return invitation
+    
+    @staticmethod
+    @transaction.atomic()
+    def _create_invitation(data: dict):
+        return InvitationModel.objects.create(**data)
+
+    @staticmethod
+    def _send_invitation_by_email(invitation: InvitationModel):
+        send_email_task.delay(
+            subject=f'Convite para o projeto {invitation.project}',
+            message=f'http://127.0.0.1:8000/api/v1/invitation/{invitation.link}/',
+            recipient_list=[invitation.made_for]
+        )
+
+    @staticmethod
     def _validate_invitation(invitation: InvitationModel, user: UserModel):
         if timezone.now().date() > invitation.expiration_date:
             raise ValidationError('O convite já foi expirado.')
@@ -59,13 +69,3 @@ class InvitationService:
 
         if invitation.made_for != user.email:
             raise ValidationError('Você não pode acessar esse convite.')
-    
-    @staticmethod
-    @transaction.atomic()
-    def decline_invitation(invitation: InvitationModel, user: UserModel):
-        InvitationService._validate_invitation(invitation, user)
-        invitation.status = InvitationModel.StatusChoices.DECLINED
-        invitation.answered = True
-        invitation.save()
-
-        return invitation
