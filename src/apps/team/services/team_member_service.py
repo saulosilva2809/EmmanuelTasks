@@ -24,23 +24,7 @@ class TeamMemberService:
         return member
 
     @staticmethod
-    def _validate_team_member_data(data: dict):
-        project = data.get('project')
-        team_id = data.get('team_id')
-        team = get_object_or_404(TeamModel, id=team_id)
-
-        if project and team:
-            if not project.teams.filter(pk=team.pk).exists():
-                raise ValidationError('Esta equipe não percente a este projeto.')
-            
-            existing_model = TeamMemberModel.objects.filter(
-                project=project,
-                team=team,
-                user=data['user']
-            ).exists()
-            if existing_model:
-                raise ValidationError('O usuário selecionado já está no time e projeto.')
-
+    @transaction.atomic()
     def delete_team_member(id: UUID):
         get_object_or_404(TeamMemberModel, id=id).delete() 
     
@@ -78,3 +62,21 @@ class TeamMemberService:
             return
     
         permission_already_exists.update(**data)
+
+    @staticmethod
+    def _validate_team_member_data(data: dict):
+        project = data.get('project')
+        team_id = data.get('team_id')
+        team = get_object_or_404(TeamModel, id=team_id)
+
+        if project and team:
+            if not project.teams.filter(pk=team.pk).exists():
+                raise ValidationError('Esta equipe não percente a este projeto.')
+            
+            existing_model = TeamMemberModel.objects.filter(
+                project=project,
+                team=team,
+                user=data['user']
+            ).exists()
+            if existing_model:
+                raise ValidationError('O usuário selecionado já está no time e projeto.')

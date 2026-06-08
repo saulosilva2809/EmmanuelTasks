@@ -33,23 +33,6 @@ class ProjectService:
         return project
 
     @staticmethod
-    def _set_slug(name, exclude_id=None):
-        slug = slugify(name)
-        unique_slug = slug
-        
-        queryset = ProjectModel.objects.filter(slug=unique_slug)
-        if exclude_id:
-            queryset = queryset.exclude(id=exclude_id)
-
-        while queryset.exists():
-            unique_slug = f'{slug}-{uuid4().hex[:4]}'
-            queryset = ProjectModel.objects.filter(slug=unique_slug)
-            if exclude_id:
-                queryset = queryset.exclude(id=exclude_id)
-
-        return unique_slug
-
-    @staticmethod
     @transaction.atomic()
     def update_project(validated_data: dict, instance: ProjectModel):
         old_name = validated_data.get('name')
@@ -116,19 +99,11 @@ class ProjectService:
         # busca e altera TeamMember do antigo dono
         old_project_owner = project.owner
 
-        print('QUERYSET: ', TeamMemberModel.objects.filter(
-            user=old_project_owner,
-            project=project,
-            permission_related_project=True
-        ))
-
         old_permission = TeamMemberModel.objects.get(
             user=old_project_owner,
             project=project,
             permission_related_project=True
         )
-
-        print(f'OLD PERMISSION: {old_permission}')
 
         old_permission.delete()
 
@@ -144,3 +119,20 @@ class ProjectService:
         project.save()
 
         return project
+    
+    @staticmethod
+    def _set_slug(name, exclude_id=None):
+        slug = slugify(name)
+        unique_slug = slug
+        
+        queryset = ProjectModel.objects.filter(slug=unique_slug)
+        if exclude_id:
+            queryset = queryset.exclude(id=exclude_id)
+
+        while queryset.exists():
+            unique_slug = f'{slug}-{uuid4().hex[:4]}'
+            queryset = ProjectModel.objects.filter(slug=unique_slug)
+            if exclude_id:
+                queryset = queryset.exclude(id=exclude_id)
+
+        return unique_slug

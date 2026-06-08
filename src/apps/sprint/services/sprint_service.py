@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.db.models import Q
 from rest_framework.validators import ValidationError
 
 from apps.authentication.models import UserModel
@@ -24,34 +23,6 @@ class SprintService:
 
         return sprint
     
-    @staticmethod
-    def _validate_project_and_teams(data: dict, instance: SprintModel = None):
-        user = data.get('user')
-        project = data.get('project') or (instance.project if instance else None)
-        status = data.get('status') or (instance.status if instance else SprintModel.SprintStatusChoices.PLANNING)
-        teams_id = data.get('teams') or (list(instance.teams.all()) if instance else None)
-        teams = TeamModel.objects.filter(id__in=teams_id)
-    
-        if project and teams:
-            valid_teams = project.teams.filter(pk__in=[team.pk for team in teams])
-            if valid_teams.count() != len(teams):
-                raise ValidationError('Uma ou mais equipes não percentem a este projeto.')
-
-        if status == SprintModel.SprintStatusChoices.ACTIVE:
-            active_qs = SprintModel.objects.filter(
-                teams__in=teams, 
-                status=SprintModel.SprintStatusChoices.ACTIVE
-            )
-            # se for update ignoramos a própria sprint na busca
-            if instance and active_qs:
-                active_qs = active_qs.exclude(pk=instance.pk)
-            
-            if active_qs.exists():
-                teams_names_list = active_qs.values_list('teams__name', flat=True).distinct()
-                teams_formatted = ', '.join(teams_names_list)
-        
-                raise ValidationError(f'Os seguintes times já possuem uma Sprint ativa: {teams_formatted}.')
-
     @staticmethod
     def _validate_sprint_data(data: dict, instance: SprintModel = None):
         start_date = data.get('start_date') or (instance.start_date if instance else None)
@@ -107,6 +78,34 @@ class SprintService:
             instance.save()
 
         return instance
+    
+    @staticmethod
+    def _validate_project_and_teams(data: dict, instance: SprintModel = None):
+        project = data.get('project') or (instance.project if instance else None)
+        status = data.get('status') or (instance.status if instance else SprintModel.SprintStatusChoices.PLANNING)
+        teams_id = data.get('teams') or (list(instance.teams.all()) if instance else None)
+        teams = TeamModel.objects.filter(id__in=teams_id)
+    
+        if project and teams:
+            valid_teams = project.teams.filter(pk__in=[team.pk for team in teams])
+            if valid_teams.count() != len(teams):
+                raise ValidationError('Uma ou mais equipes não percentem a este projeto.')
+
+        if status == SprintModel.SprintStatusChoices.ACTIVE:
+            active_qs = SprintModel.objects.filter(
+                teams__in=teams, 
+                status=SprintModel.SprintStatusChoices.ACTIVE
+            )
+            # se for update ignoramos a própria sprint na busca
+            if instance and active_qs:
+                active_qs = active_qs.exclude(pk=instance.pk)
+            
+            if active_qs.exists():
+                teams_names_list = active_qs.values_list('teams__name', flat=True).distinct()
+                teams_formatted = ', '.join(teams_names_list)
+        
+                raise ValidationError(f'Os seguintes times já possuem uma Sprint ativa: {teams_formatted}.')
+
 
     @staticmethod
     def _validate_remove_teams(sprint: SprintModel, teams_id: list):

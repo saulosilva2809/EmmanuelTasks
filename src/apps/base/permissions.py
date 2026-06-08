@@ -29,7 +29,6 @@ class IsManagerOrOwner(permissions.BasePermission):
                 obj.manager == request.user or 
                 ProjectModel.objects.filter(teams=obj, owner=request.user).exists()
             )
-            print(f'IS BOOS: {is_boos}')
             if is_boos:
                 return True
 
@@ -71,5 +70,4 @@ class IsManagerOrOwner(permissions.BasePermission):
             
             return is_boos
 
-        print('NENHUMA INSTÂNCIA PASSADA')
         return False
