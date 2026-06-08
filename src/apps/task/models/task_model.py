@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.base.models import BaseModel, SoftDeleteModel
+from apps.base.models import BaseModel
 
 
-class TaskModel(BaseModel, SoftDeleteModel):
+class TaskModel(BaseModel):
     class PriorityChoices(models.TextChoices):
         LOW = 'LOW', 'Baixa'
         MEDIUM = 'MEDIUM', 'Média'

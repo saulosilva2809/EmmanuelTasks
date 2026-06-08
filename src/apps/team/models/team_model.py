@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.base.models import BaseModel, SoftDeleteModel
+from apps.base.models import BaseModel
 
 
-class TeamModel(BaseModel, SoftDeleteModel):
+class TeamModel(BaseModel):
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     manager = models.ForeignKey(
