@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.base.models import BaseModel, SoftDeleteModel
+from apps.base.models import BaseModel
 
 
-class SprintModel(BaseModel, SoftDeleteModel):
+class SprintModel(BaseModel):
     class SprintStatusChoices(models.TextChoices):
         PLANNING = 'PLANNING', 'Planejamento'
         ACTIVE = 'ACTIVE', 'Em Execução'

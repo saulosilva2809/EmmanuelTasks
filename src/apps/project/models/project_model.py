@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.base.models import BaseModel, SoftDeleteModel
+from apps.base.models import BaseModel
 
 
-class ProjectModel(BaseModel, SoftDeleteModel):
+class ProjectModel(BaseModel):
     class ProjectStatusChoices(models.TextChoices):
         PLANNING = 'PLANNING', 'Planejamento'
         ACTIVE = 'ACTIVE', 'Ativo'
@@ -36,15 +36,6 @@ class ProjectModel(BaseModel, SoftDeleteModel):
         ordering = ['-created_at'] 
         verbose_name = 'Project'
         verbose_name_plural = 'Projects'
-
-        # regra para garantir o slug único se o Project não estiver deleteado (SOFT DELETE)
-        constraints = [
-            models.UniqueConstraint(
-                fields=['slug'], 
-                condition=models.Q(deleted_at__isnull=True),
-                name='unique_slug_active_project'
-            )
-        ]
 
     def __str__(self):
         return self.name
